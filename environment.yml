@@ -1,0 +1,13 @@
+name: portfolio-risk-engine
+description: A portfolio risk engine built with Python, leveraging GPU acceleration for efficient risk calculations.
+channel :
+  - nvidia
+  - conda-forge
+
+dependencies:
+    - python=3.13
+    - pip
+    - numpy
+    - cuda-toolkit
+    - pip :
+        - -e .[dev]

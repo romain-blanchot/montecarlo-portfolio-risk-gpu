@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 source = "vcs"
 
 [project]
-name = "portfolio_risk_engine"
+name = "portfolio-risk-engine"
 dynamic = ["version"]
 requires-python = ">=3.13"
 description = "This project implements a GPU-accelerated Monte Carlo engine to simulate multi-asset portfolio dynamics and estimate risk metrics such as Value at Risk (VaR) and Expected Shortfall."
@@ -19,8 +19,14 @@ maintainers = [
 license = { file = "LICENSE" }
 readme = "README.md"
 dependencies = [
-
+    "numpy",
+    "pandas",
+#    "numba",
+#    "cupy",
+#    "scipy",
 ]
+
+
 keywords = ["finance", "risk management", "portfolio analysis"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -40,7 +46,26 @@ Issues = "https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/issue
 Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
 DOWNLOAD = "https://pypi.org/project/portfolio-risk-engine/#files"
 
-[project.scripts]
+[dependency-groups]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings",
+]
+lint = [
+    "ruff",
+    "mypy",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+]
+dev = [
+    "pre-commit",
+    {include-group = "lint"},
+    {include-group = "test"},
+    {include-group = "docs"},
+]
 
-
-[project.optional-dependencies]
+#[project.scripts]
+#[project.optional-dependencies]
