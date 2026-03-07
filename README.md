@@ -16,9 +16,9 @@ This project implements a GPU-accelerated Monte Carlo engine to simulate multi-a
 - ci
 - cd
 - release
-- pre commit format
-- dev dependancies
-- dockerfile
+
+
+
 
 
 
