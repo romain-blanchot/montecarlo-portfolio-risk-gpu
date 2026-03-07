@@ -1,0 +1,91 @@
+[build-system]
+requires = ["hatchling >= 1.26", "hatch-vcs >= 0.5.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[project]
+name = "portfolio-risk-engine"
+dynamic = ["version"]
+requires-python = ">=3.13"
+description = "This project implements a GPU-accelerated Monte Carlo engine to simulate multi-asset portfolio dynamics and estimate risk metrics such as Value at Risk (VaR) and Expected Shortfall."
+authors = [
+    { name = "Romain Blanchot", email = "romain.blanchot@nerionsoft.com"}
+]
+maintainers = [
+    { name = "Romain Blanchot", email = "romain.blanchot@nerionsoft.com"}
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+dependencies = [
+    "numpy",
+    "pandas",
+#    "numba",
+#    "cupy",
+#    "scipy",
+]
+
+
+keywords = ["finance", "risk management", "portfolio analysis"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Scientific/Engineering",
+]
+[project.urls]
+Homepage = "https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu"
+Documentation = "https://readthedocs.org"
+Repository = "git@github.com:romain-blanchot/montecarlo-portfolio-risk-gpu.git"
+Issues = "https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/issues"
+Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+DOWNLOAD = "https://pypi.org/project/portfolio-risk-engine/#files"
+
+[project.optional-dependencies]
+dev = [
+  "pre-commit",
+  "ruff",
+  "mypy",
+  "pytest",
+  "pytest-cov",
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocstrings",
+]
+
+#[dependency-groups]
+#docs = [
+#    "mkdocs",
+#    "mkdocs-material",
+#    "mkdocstrings",
+#]
+#lint = [
+#    "ruff",
+#    "mypy",
+#]
+#test = [
+#    "pytest",
+#    "pytest-cov",
+#]
+#dev = [
+#    "pre-commit",
+#    {include-group = "lint"},
+#    {include-group = "test"},
+#    {include-group = "docs"},
+#]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/portfolio_risk_engine"]
+
+[project.scripts]
+portfolio-sim = "portfolio_risk_engine.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
