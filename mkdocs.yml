@@ -1,0 +1,15 @@
+site_name: Portfolio Risk Engine
+
+site_description: Monte Carlo portfolio risk simulation
+site_author: Romain Blanchot
+
+theme:
+  name: zensical
+
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - API: api.md
+
+plugins:
+  - search
