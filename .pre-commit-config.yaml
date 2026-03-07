@@ -18,3 +18,30 @@ repos:
         entry: pytest
         language: system
         pass_filenames: false
+
+#repos:
+#  - repo: local
+#    hooks:
+#      - id: ruff
+#        name: ruff
+#        entry: ruff check .
+#        language: system
+#        types: [python]
+#
+#      - id: ruff-format
+#        name: ruff-format
+#        entry: ruff format .
+#        language: system
+#        types: [python]
+#
+#      - id: mypy
+#        name: mypy
+#        entry: mypy .
+#        language: system
+#        types: [python]
+#
+#      - id: pytest
+#        name: pytest
+#        entry: pytest
+#        language: system
+#        pass_filenames: false
