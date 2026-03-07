@@ -9,7 +9,7 @@ source = "vcs"
 name = "portfolio_risk_engine"
 dynamic = ["version"]
 requires-python = ">=3.13"
-description = "A Python package for calculating portfolio risk metrics."
+description = "This project implements a GPU-accelerated Monte Carlo engine to simulate multi-asset portfolio dynamics and estimate risk metrics such as Value at Risk (VaR) and Expected Shortfall."
 authors = [
     { name = "Romain Blanchot", email = "romain.blanchot@nerionsoft.com"}
 ]
@@ -33,13 +33,14 @@ classifiers = [
     "Topic :: Software Development :: Libraries"
 ]
 [project.urls]
-Homepage = "https://example.com"
+Homepage = "https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu"
 Documentation = "https://readthedocs.org"
-Repository = "https://github.com/me/spam.git"
-Issues = "https://github.com/me/spam/issues"
+Repository = "git@github.com:romain-blanchot/montecarlo-portfolio-risk-gpu.git"
+Issues = "https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/issues"
 Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
-DOWNLOAD = ""
+DOWNLOAD = "https://pypi.org/project/portfolio-risk-engine/#files"
 
 [project.scripts]
+
 
 [project.optional-dependencies]
