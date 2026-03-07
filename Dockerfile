@@ -2,20 +2,25 @@ FROM nvidia/cuda:13.1.1-cudnn-devel-ubuntu24.04
 
 WORKDIR /app
 
+ARG SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0
+
 RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-venv \
-    python3-pip \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update && apt-get install -y \
+    python3.13 \
+    python3.13-venv \
+    python3.13-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m venv /opt/venv
+RUN python3.13 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY pyproject.toml .
 COPY src ./src
 
 RUN pip install --upgrade pip
-RUN pip install .
+RUN SETUPTOOLS_SCM_PRETEND_VERSION=${SETUPTOOLS_SCM_PRETEND_VERSION} pip install .
 
 CMD ["python", "-m", "portfolio_risk_engine"]
 
