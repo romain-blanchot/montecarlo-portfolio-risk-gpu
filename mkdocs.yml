@@ -4,7 +4,7 @@ site_description: Monte Carlo portfolio risk simulation
 site_author: Romain Blanchot
 
 theme:
-  name: material
+  name: zensical
 
 nav:
   - Home: index.md
