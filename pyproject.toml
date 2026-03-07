@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling >= 1.26", "hatch-vcs >= 0.5.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[project]
+name = "portfolio_risk_engine"
+dynamic = ["version"]
+requires-python = ">=3.13"
+description = "A Python package for calculating portfolio risk metrics."
+authors = [
+    { name = "Romain Blanchot", email = "romain.blanchot@nerionsoft.com"}
+]
+maintainers = [
+    { name = "Romain Blanchot", email = "romain.blanchot@nerionsoft.com"}
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+dependencies = [
+
+]
+keywords = ["finance", "risk management", "portfolio analysis"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Finance :: Investment",
+    "Topic :: Software Development :: Libraries"
+]
+[project.urls]
+Homepage = "https://example.com"
+Documentation = "https://readthedocs.org"
+Repository = "https://github.com/me/spam.git"
+Issues = "https://github.com/me/spam/issues"
+Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+DOWNLOAD = ""
+
+[project.scripts]
+
+[project.optional-dependencies]
