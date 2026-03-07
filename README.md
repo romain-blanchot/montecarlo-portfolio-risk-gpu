@@ -26,3 +26,8 @@ conda env update -f environment.yml --prune
 conda activate portfolio-risk-engine
 python -m pip install -U pip
 python -m pip install --group dev
+
+
+pip install pre-commit
+pre-commit install
+
