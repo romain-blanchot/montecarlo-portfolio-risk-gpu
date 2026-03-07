@@ -1,21 +1,5 @@
 name: CI
 
-# List :
-# checkout
-# setup python
-# install deps
-
-# format check
-# lint
-
-# unit tests
-# integration tests
-
-# sonar analysis
-
-# build
-# push artifcat
-
 on:
   push:
     branches:
@@ -28,12 +12,16 @@ on:
 
 permissions:
   contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
-    name: Build and test
+  test:
+    name: Lint and test
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -55,14 +43,47 @@ jobs:
       - name: Run tests
         run: pytest tests
 
-      - name: Install build dependencies
-        run: python -m pip install --upgrade build
-
-      - name: Build
-        run: python -m build
+      - name: Build package
+        run: python -m pip install --upgrade build && python -m build
 
       - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
           if-no-files-found: error
+
+  docker:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+            type=ref,event=branch
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
