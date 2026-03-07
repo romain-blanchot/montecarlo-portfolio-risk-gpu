@@ -31,12 +31,13 @@ keywords = ["finance", "risk management", "portfolio analysis"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.13",
-    "Topic :: Finance :: Investment",
-    "Topic :: Software Development :: Libraries"
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Scientific/Engineering",
 ]
 [project.urls]
 Homepage = "https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu"
@@ -46,26 +47,45 @@ Issues = "https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/issue
 Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
 DOWNLOAD = "https://pypi.org/project/portfolio-risk-engine/#files"
 
-[dependency-groups]
-docs = [
-    "mkdocs",
-    "mkdocs-material",
-    "mkdocstrings",
-]
-lint = [
-    "ruff",
-    "mypy",
-]
-test = [
-    "pytest",
-    "pytest-cov",
-]
+[project.optional-dependencies]
 dev = [
-    "pre-commit",
-    {include-group = "lint"},
-    {include-group = "test"},
-    {include-group = "docs"},
+  "pre-commit",
+  "ruff",
+  "mypy",
+  "pytest",
+  "pytest-cov",
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocstrings",
 ]
 
-#[project.scripts]
-#[project.optional-dependencies]
+#[dependency-groups]
+#docs = [
+#    "mkdocs",
+#    "mkdocs-material",
+#    "mkdocstrings",
+#]
+#lint = [
+#    "ruff",
+#    "mypy",
+#]
+#test = [
+#    "pytest",
+#    "pytest-cov",
+#]
+#dev = [
+#    "pre-commit",
+#    {include-group = "lint"},
+#    {include-group = "test"},
+#    {include-group = "docs"},
+#]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/portfolio_risk_engine"]
+
+[project.scripts]
+portfolio-sim = "portfolio_risk_engine.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
