@@ -102,6 +102,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0-dev.${{ github.sha }}
+            SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0+dev.${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
