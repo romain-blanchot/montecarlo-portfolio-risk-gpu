@@ -16,5 +16,5 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     volumes:
-      - ../src:/app/src        # hot reload du code
-      - ../outputs:/app/outputs
+      - ./src:/app/src
+      - ./outputs:/app/outputs
