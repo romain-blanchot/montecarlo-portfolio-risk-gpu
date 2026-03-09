@@ -1,0 +1,9 @@
+.git
+.github
+.idea
+.env
+notebooks/
+docs/
+tests/
+*.pyc
+__pycache__

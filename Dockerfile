@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 RUN python3.13 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY pyproject.toml .
+COPY . .
 COPY src ./src
 
 RUN pip install --upgrade pip

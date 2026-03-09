@@ -1,0 +1,20 @@
+services:
+  portfolio-sim:
+    build:
+      dockerfile: Dockerfile
+      args:
+        SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0+local"
+    container_name: portfolio-risk-engine-local
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./src:/app/src
+      - ./outputs:/app/outputs
