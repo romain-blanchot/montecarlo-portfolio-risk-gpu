@@ -1,0 +1,72 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - main
+      - integration
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  # --- Deploy versioned docs on release tag ---
+  docs-release:
+    name: Deploy release docs
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Configure git for mike
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && pip install -e .[dev]
+
+      - name: Deploy versioned docs
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          mike deploy --push --update-aliases "$TAG_NAME" latest
+          mike set-default --push latest
+
+  # --- Deploy dev docs on branch push ---
+  docs-dev:
+    name: Deploy dev docs
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'branch'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Configure git for mike
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && pip install -e .[dev]
+
+      - name: Deploy dev docs
+        run: mike deploy --push dev

@@ -1,17 +1,57 @@
-# Welcome to MkDocs
+# Portfolio Risk Engine
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+GPU-accelerated Monte Carlo engine for simulating multi-asset portfolio dynamics and estimating risk metrics.
 
-## Commands
+## Features
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+- **Monte Carlo Simulation**: Simulate thousands of portfolio scenarios
+- **Risk Metrics**: Calculate VaR (Value at Risk) and Expected Shortfall
+- **GPU Acceleration**: Leverage CUDA for high-performance computations
+- **Multi-Asset Support**: Handle portfolios with multiple correlated assets
 
-## Project layout
+## Quick Start
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+### Installation
+
+```bash
+pip install portfolio-risk-engine
+```
+
+### Basic Usage
+
+```python
+from portfolio_risk_engine import PortfolioSimulator
+
+# Create simulator
+simulator = PortfolioSimulator()
+
+# Run simulation
+results = simulator.run()
+
+# Get risk metrics
+var_95 = results.value_at_risk(0.95)
+es_95 = results.expected_shortfall(0.95)
+```
+
+## CLI
+
+```bash
+portfolio-sim --help
+```
+
+## Development
+
+```bash
+# Clone and setup
+git clone https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu.git
+cd montecarlo-portfolio-risk-gpu
+
+# Install with dev dependencies
+pip install -e .[dev]
+
+# Run tests
+pytest tests/
+
+# Run linting
+ruff check .
+```

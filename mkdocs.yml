@@ -1,15 +1,53 @@
 site_name: Portfolio Risk Engine
-
-site_description: Monte Carlo portfolio risk simulation
+site_url: https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/
+site_description: GPU-accelerated Monte Carlo engine for multi-asset portfolio risk simulation
 site_author: Romain Blanchot
 
+repo_name: montecarlo-portfolio-risk-gpu
+repo_url: https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu
+
 theme:
-  name: mkdocs
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.top
+    - content.code.copy
 
 nav:
   - Home: index.md
   - Architecture: architecture.md
-  - API: api.md
+  - API Reference: api.md
 
 plugins:
   - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - admonition
+  - toc:
+      permalink: true
+
+extra:
+  version:
+    provider: mike
+    default: latest
