@@ -1,8 +1,5 @@
 # Monte Carlo Portfolio Risk Engine (GPU Accelerated)
 
-This project implements a GPU-accelerated Monte Carlo engine to simulate multi-asset portfolio dynamics and estimate risk metrics such as Value at Risk (VaR) and Expected Shortfall.
-
-
 | | |
 | --- | --- |
 | CI/CD | [![CI - Test](https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/actions/workflows/ci.yml/badge.svg)](https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/actions/workflows/ci.yml) [![CD - Build](https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/actions/workflows/cd.yml/badge.svg)](https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/actions/workflows/cd.yml) |
@@ -19,110 +16,135 @@ Docs
 Build
 Docker
 Release
+CI/CD
 
------
+Coverage
+
+Python version
+
+[![CI](https://img.shields.io/badge/CI-passing-brightgreen)](#ci-cd)
+[![Python](https://img.shields.io/badge/Python-3.13%2B-blue)](#installation)
+[![CUDA](https://img.shields.io/badge/CUDA-supported-green)](#benchmarks)
+[![License](https://img.shields.io/badge/License-BSD_3-yellow.svg)](#license)
+
+GPU-accelerated Monte Carlo engine for portfolio risk simulation and market risk analytics.
 
 ## Overview
 
-This project explores the design of a Monte Carlo risk engine capable of simulating portfolio behavior under stochastic market scenarios.
 
-It combines:
-- quantitative finance abstractions,
-- GPU-oriented computation,
-- clean software architecture,
-- reproducible development workflows,
-- and production-oriented packaging.
+This project implements a GPU-accelerated Monte Carlo engine to simulate multi-asset portfolio dynamics and estimate risk metrics such as Value at Risk (VaR) and Expected Shortfall.
 
-## Why this project exists
 
-Quantitative finance systems often become difficult to understand because several layers of abstraction are mixed together:
-market assumptions, simulation logic, instrument valuation, portfolio aggregation, and infrastructure.
+It is designed for:
+- quantitative finance experimentation
+- portfolio risk analysis
+- CPU vs GPU performance comparison
+- extension toward more advanced market models
 
-This repository aims to make those layers explicit.
+## Financial Context
 
-## Project goals
+Portfolio risk cannot be assessed from a single forecast. This engine simulates many market scenarios to estimate the distribution of future portfolio values and derive downside risk measures.
 
-### Financial goals
-- simulate market scenarios,
-- analyze portfolio behavior,
-- estimate risk-related outputs from Monte Carlo paths.
+Typical use cases:
+- Value-at-Risk
+- Expected Shortfall
+- scenario analysis
+- stress testing
+- distribution analysis
 
-### Engineering goals
-- accelerate compute-intensive workloads with GPU support,
-- isolate domain logic from infrastructure,
-- provide a reproducible development environment,
-- support lean production deployment,
-- maintain strong code quality standards.
+## Mathematical Model
 
-## Conceptual architecture
+The baseline implementation assumes asset prices follow a Geometric Brownian Motion (GBM):
 
-At a high level, the engine follows this flow:
+dS_t = μS_t dt + σS_t dW_t
 
-1. define market assumptions,
-2. generate stochastic scenarios,
-3. simulate paths,
-4. value positions,
-5. aggregate results,
-6. compute portfolio-level analytics.
+This model is used as a simple and extensible starting point for portfolio risk simulation.
 
-### Main abstractions
+## Numerical Method
 
-#### Market model
-Defines how market variables evolve through time.
+The engine uses Monte Carlo simulation:
 
-#### Scenario generator
-Produces stochastic trajectories from the selected model.
+1. simulate market paths
+2. revalue the portfolio under each path
+3. aggregate results into risk metrics
 
-#### Portfolio and instruments
-Represents financial positions to be evaluated.
+This approach is flexible, scalable, and well suited for GPU acceleration.
 
-#### Valuation layer
-Computes instrument or portfolio value under simulated states.
+## Architecture
 
-#### Risk aggregation
-Transforms raw simulation outputs into risk metrics.
+```text
+src/  
+└── portfolio_simulator/  
+    ├── market/  
+    ├── portfolio/  
+    ├── simulation/  
+    │   ├── monte_carlo_cpu.py  
+    │   └── monte_carlo_gpu.py  
+    ├── risk/  
+    └── analytics/
+```
 
-#### Compute backend
-Executes the workload on CPU or GPU.
+## Installation
 
-## Why GPU acceleration
-
-Monte Carlo simulation is highly parallel by nature, making GPU execution a natural fit for large-scale scenario generation and valuation workloads.
-
-The goal is not only to run faster, but to do so within a maintainable and well-structured system.
-
-## Tech stack
-
-- Python
-- CUDA / GPU acceleration
-- `pyproject.toml`
-- Conda for development
-- Docker + CUDA base image + venv for production
-- MkDocs + GitHub Pages
-- SonarQube
-- pytest / ruff / mypy
-
-## Environment strategy
-
-### Development
-Development uses Conda together with `pyproject.toml` and a local CUDA Toolkit.
-
-This setup is convenient for iterative work, experimentation, and local GPU development.
-
-### Production
-Production uses Docker, an NVIDIA CUDA base image, a Python virtual environment, and the same Python package definition via `pyproject.toml`.
-
-This keeps deployment leaner and more operationally predictable.
-
-## Development setup
-
-### Prerequisites
-- Conda
-- NVIDIA drivers
-- CUDA Toolkit
-
-### Install
 ```bash
-conda env create -f environment.yml
+git clone git@github.com:romain-blanchot/montecarlo-portfolio-risk-gpu.git
+cd montecarlo-portfolio-risk-gpu  
+conda env create -f environment.yml 
 conda activate portfolio-risk-engine
-pip install -e ".[dev]"
+```
+
+## Usage
+
+```python
+print("Hello World!")
+```
+
+## Benchmarks
+
+The project includes benchmark scenarios to compare:
+- CPU vs GPU runtime
+- scalability with number of paths
+- scalability with number of assets
+- numerical consistency across backends
+
+## Experiments
+
+The `notebooks/` directory contains research and validation work, including:
+- volatility sensitivity
+- correlation studies
+- CPU/GPU comparisons
+- reproducibility checks
+
+## Testing
+
+Run the test suite with:
+```bash
+pytest
+```
+With coverage:
+```bash
+pytest --cov=src --cov-report=term-missing
+```
+## CI/CD
+
+The CI/CD pipeline covers:
+- linting
+- formatting
+- type checking
+- tests
+- coverage
+- package build
+- documentation and release workflows
+
+## Roadmap
+
+- [ ] Baseline GBM simulation
+- [ ] GPU acceleration
+- [ ] Multi-asset correlation support
+- [ ] VaR and ES analytics
+- [ ] Benchmark suite
+- [ ] Advanced stochastic models
+
+## License
+
+[BSD 3](./LICENSE)
