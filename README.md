@@ -54,34 +54,71 @@ This approach is flexible, scalable, and well suited for GPU acceleration.
 ## Architecture
 
 ```text
-src/  
-└── portfolio_simulator/  
-    ├── market/  
-    ├── portfolio/  
-    ├── simulation/  
-    │   ├── monte_carlo_cpu.py  
-    │   └── monte_carlo_gpu.py  
-    ├── risk/  
-    └── analytics/
+src/portfolio_risk_engine/
+├── domain/
+│   ├── value_objects/       # Ticker, Currency, Weight, DateRange
+│   ├── models/              # Asset, Position, Portfolio, HistoricalPrices
+│   └── ports/               # MarketDataProvider (Protocol)
+├── application/
+│   └── use_cases/           # FetchMarketData
+├── infrastructure/
+│   └── market_data/         # YahooFinanceMarketDataProvider
+├── cli.py
+└── __main__.py
 ```
 
 ## Installation
 
 ```bash
 git clone git@github.com:romain-blanchot/montecarlo-portfolio-risk-gpu.git
-cd montecarlo-portfolio-risk-gpu  
-conda env create -f environment.yml 
+cd montecarlo-portfolio-risk-gpu
+conda env create -f environment.yml
 conda activate portfolio-risk-engine
 ```
 
 ```bash
-pre-commit install         
+pre-commit install
 ```
 
 ## Usage
 
+### Fetch asset metadata
+
 ```python
-print("Hello World!")
+from portfolio_risk_engine.infrastructure.market_data.yahoo_finance_market_data_provider import (
+    YahooFinanceMarketDataProvider,
+)
+from portfolio_risk_engine.domain.value_objects.ticker import Ticker
+
+provider = YahooFinanceMarketDataProvider()
+asset = provider.get_asset(Ticker("AAPL"))
+
+print(asset.ticker.value)    # AAPL
+print(asset.currency.code)   # USD
+print(asset.name)            # Apple Inc.
+```
+
+### Fetch historical prices
+
+```python
+from datetime import date
+from portfolio_risk_engine.application.use_cases.fetch_market_data import FetchMarketData
+from portfolio_risk_engine.infrastructure.market_data.yahoo_finance_market_data_provider import (
+    YahooFinanceMarketDataProvider,
+)
+from portfolio_risk_engine.domain.value_objects.ticker import Ticker
+from portfolio_risk_engine.domain.value_objects.date_range import DateRange
+
+provider = YahooFinanceMarketDataProvider()
+use_case = FetchMarketData(provider)
+
+result = use_case.execute(
+    tickers=(Ticker("AAPL"), Ticker("MSFT")),
+    date_range=DateRange(start=date(2024, 1, 1), end=date(2024, 3, 1)),
+)
+
+print(len(result.dates))                       # 40 (trading days)
+print(result.prices_by_ticker[Ticker("AAPL")][:3])  # (183.73, 182.35, 180.03)
 ```
 
 ## Benchmarks
@@ -102,13 +139,19 @@ The `notebooks/` directory contains research and validation work, including:
 
 ## Testing
 
-Run the test suite with:
+Run the unit test suite:
 ```bash
 pytest
 ```
+
 With coverage:
 ```bash
 pytest --cov=src --cov-report=term-missing
+```
+
+Run integration tests (requires network):
+```bash
+pytest -m integration
 ```
 ## CI/CD
 
@@ -123,6 +166,8 @@ The CI/CD pipeline covers:
 
 ## Roadmap
 
+- [x] Domain model (Asset, Portfolio, HistoricalPrices)
+- [x] Market data provider (Yahoo Finance)
 - [ ] Baseline GBM simulation
 - [ ] GPU acceleration
 - [ ] Multi-asset correlation support
