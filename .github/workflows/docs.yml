@@ -8,16 +8,15 @@ on:
     tags:
       - "v*"
 
-permissions:
-  contents: write
-  pages: write
-
 jobs:
   # --- Deploy versioned docs on release tag ---
   docs-release:
     name: Deploy release docs
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+      pages: write
     steps:
       - uses: actions/checkout@v6
         with:
@@ -49,6 +48,9 @@ jobs:
     name: Deploy dev docs
     runs-on: ubuntu-latest
     if: github.ref_type == 'branch'
+    permissions:
+      contents: write
+      pages: write
     steps:
       - uses: actions/checkout@v6
         with:
