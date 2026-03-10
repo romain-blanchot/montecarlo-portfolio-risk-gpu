@@ -41,7 +41,7 @@ class CpuMonteCarloEngine:
 
         terminal_prices = {}
         for i, ticker in enumerate(params.tickers):
-            terminal_prices[ticker] = tuple(float(x) for x in terminal_prices_array[i])
+            terminal_prices[ticker] = tuple(terminal_prices_array[i].tolist())
 
         return MonteCarloSimulationResult(
             tickers=params.tickers,

@@ -1,7 +1,11 @@
 """Benchmark CPU vs GPU Monte Carlo engine.
 
-Measures end-to-end simulate() time including GPU->CPU transfer.
-GPU timing uses explicit CUDA synchronization for accuracy.
+Compares three pipelines end-to-end (simulate + risk):
+  1. CPU:              NumPy simulate -> tuple -> NumPy risk
+  2. GPU (via domain): CuPy simulate -> tuple -> NumPy risk
+  3. GPU accelerated:  CuPy simulate + risk, zero tuple allocation
+
+GPU timing uses explicit CUDA synchronization.
 Each scenario runs N_RUNS times after a warm-up; reports median, mean, min, max.
 
 Usage:
@@ -31,6 +35,9 @@ from portfolio_risk_engine.infrastructure.simulation.cpu_monte_carlo_engine impo
 try:
     import cupy as cp
 
+    from portfolio_risk_engine.infrastructure.simulation.gpu_accelerated_pipeline import (
+        GpuAcceleratedPipeline,
+    )
     from portfolio_risk_engine.infrastructure.simulation.gpu_monte_carlo_engine import (
         GpuMonteCarloEngine,
     )
@@ -56,7 +63,6 @@ def _make_synthetic_params(n_assets: int) -> MarketParameters:
     tickers = tuple(Ticker(f"T{i:03d}") for i in range(n_assets))
     drift = tuple(float(x) for x in rng.normal(0.08, 0.05, n_assets))
 
-    # Random positive-definite covariance matrix
     A = rng.normal(0, 0.1, (n_assets, n_assets))
     cov = A @ A.T + np.eye(n_assets) * 0.02
     covariance_matrix = tuple(tuple(float(x) for x in row) for row in cov)
@@ -72,11 +78,12 @@ def _make_synthetic_params(n_assets: int) -> MarketParameters:
 def _make_portfolio(params: MarketParameters) -> Portfolio:
     n = len(params.tickers)
     w = 1.0 / n
-    positions = tuple(
-        Position(asset=Asset(ticker=t, currency=USD), weight=Weight(w))
-        for t in params.tickers
+    return Portfolio(
+        positions=tuple(
+            Position(asset=Asset(ticker=t, currency=USD), weight=Weight(w))
+            for t in params.tickers
+        )
     )
-    return Portfolio(positions=positions)
 
 
 def _make_initial_prices(n_assets: int) -> tuple[float, ...]:
@@ -84,66 +91,72 @@ def _make_initial_prices(n_assets: int) -> tuple[float, ...]:
     return tuple(float(x) for x in rng.uniform(50, 500, n_assets))
 
 
-def _timed_simulate(
-    use_case: RunMonteCarlo,
-    params: MarketParameters,
-    initial_prices: tuple[float, ...],
-    n_simulations: int,
-    is_gpu: bool,
-) -> tuple[float, object]:
-    """Run one simulation and return (elapsed_seconds, result)."""
-    if is_gpu:
-        cp.cuda.Stream.null.synchronize()
-
-    start = time.perf_counter()
-    result = use_case.execute(
-        market_params=params,
-        initial_prices=initial_prices,
-        num_simulations=n_simulations,
-        time_horizon_days=TIME_HORIZON_DAYS,
-    )
-    if is_gpu:
-        cp.cuda.Stream.null.synchronize()
-
-    elapsed = time.perf_counter() - start
-    return elapsed, result
+# ── Timing helpers ──────────────────────────────────────────
 
 
-def _run_benchmark(
-    engine: object,
-    backend_name: str,
+def _time_cpu_pipeline(
     params: MarketParameters,
     initial_prices: tuple[float, ...],
     portfolio: Portfolio,
-    n_simulations: int,
-    is_gpu: bool,
-) -> dict:
-    use_case = RunMonteCarlo(engine=engine)  # type: ignore[arg-type]
+    n_sims: int,
+) -> tuple[float, dict]:
+    use_case = RunMonteCarlo(engine=CpuMonteCarloEngine(seed=SEED))
+    start = time.perf_counter()
+    sim = use_case.execute(
+        market_params=params,
+        initial_prices=initial_prices,
+        num_simulations=n_sims,
+        time_horizon_days=TIME_HORIZON_DAYS,
+    )
+    risk = ComputePortfolioRisk.execute(portfolio, sim)
+    elapsed = time.perf_counter() - start
+    return elapsed, _metrics_dict(risk)
 
-    # Warm-up run (not counted)
-    _, _ = _timed_simulate(use_case, params, initial_prices, n_simulations, is_gpu)
 
-    # Timed runs
-    timings = []
-    last_result = None
-    for _ in range(N_RUNS):
-        elapsed, result = _timed_simulate(
-            use_case, params, initial_prices, n_simulations, is_gpu
-        )
-        timings.append(elapsed)
-        last_result = result
+def _time_gpu_domain_pipeline(
+    params: MarketParameters,
+    initial_prices: tuple[float, ...],
+    portfolio: Portfolio,
+    n_sims: int,
+) -> tuple[float, dict]:
+    use_case = RunMonteCarlo(engine=GpuMonteCarloEngine(seed=SEED))
+    cp.cuda.Stream.null.synchronize()
+    start = time.perf_counter()
+    sim = use_case.execute(
+        market_params=params,
+        initial_prices=initial_prices,
+        num_simulations=n_sims,
+        time_horizon_days=TIME_HORIZON_DAYS,
+    )
+    risk = ComputePortfolioRisk.execute(portfolio, sim)
+    cp.cuda.Stream.null.synchronize()
+    elapsed = time.perf_counter() - start
+    return elapsed, _metrics_dict(risk)
 
-    risk = ComputePortfolioRisk.execute(portfolio, last_result)  # type: ignore[arg-type]
 
+def _time_gpu_accelerated(
+    params: MarketParameters,
+    initial_prices: tuple[float, ...],
+    weights: tuple[float, ...],
+    n_sims: int,
+) -> tuple[float, dict]:
+    pipeline = GpuAcceleratedPipeline(seed=SEED)
+    cp.cuda.Stream.null.synchronize()
+    start = time.perf_counter()
+    risk = pipeline.run(
+        market_params=params,
+        initial_prices=initial_prices,
+        weights=weights,
+        num_simulations=n_sims,
+        time_horizon_days=TIME_HORIZON_DAYS,
+    )
+    cp.cuda.Stream.null.synchronize()
+    elapsed = time.perf_counter() - start
+    return elapsed, _metrics_dict(risk)
+
+
+def _metrics_dict(risk: object) -> dict:
     return {
-        "backend": backend_name,
-        "n_assets": len(params.tickers),
-        "n_simulations": n_simulations,
-        "timings": timings,
-        "median": statistics.median(timings),
-        "mean": statistics.mean(timings),
-        "min": min(timings),
-        "max": max(timings),
         "mean_return": risk.mean_return,
         "volatility": risk.volatility,
         "var_95": risk.var_95,
@@ -153,87 +166,106 @@ def _run_benchmark(
     }
 
 
+# ── Benchmark runner ────────────────────────────────────────
+
+
+def _bench(name: str, fn, *args) -> dict:
+    """Warm-up + N_RUNS timed executions."""
+    # Warm-up
+    fn(*args)
+
+    timings = []
+    last_metrics = None
+    for _ in range(N_RUNS):
+        elapsed, metrics = fn(*args)
+        timings.append(elapsed)
+        last_metrics = metrics
+
+    return {
+        "name": name,
+        "timings": timings,
+        "median": statistics.median(timings),
+        "mean": statistics.mean(timings),
+        "min": min(timings),
+        "max": max(timings),
+        **last_metrics,
+    }
+
+
 def _print_result(r: dict) -> None:
-    print(f"  Backend:      {r['backend']}")
-    print(f"  Assets:       {r['n_assets']}")
-    print(f"  Simulations:  {r['n_simulations']:,}")
-    print(f"  Runs:         {N_RUNS} (after 1 warm-up)")
-    print(f"  Median:       {r['median']:.4f} s")
-    print(f"  Mean:         {r['mean']:.4f} s")
-    print(f"  Min:          {r['min']:.4f} s")
-    print(f"  Max:          {r['max']:.4f} s")
-    print(f"  Mean return:  {r['mean_return']:+.4%}")
-    print(f"  Volatility:   {r['volatility']:.4%}")
-    print(f"  VaR 95%:      {r['var_95']:.4%}")
-    print(f"  VaR 99%:      {r['var_99']:.4%}")
-    print(f"  ES 95%:       {r['es_95']:.4%}")
-    print(f"  ES 99%:       {r['es_99']:.4%}")
+    print(f"    Median: {r['median']:.4f} s  |  Mean: {r['mean']:.4f} s")
+    print(f"    Min:    {r['min']:.4f} s  |  Max:  {r['max']:.4f} s")
+    print(f"    VaR95={r['var_95']:.4%}  VaR99={r['var_99']:.4%}")
+    print(f"    ES95={r['es_95']:.4%}   ES99={r['es_99']:.4%}")
 
 
 def main() -> None:
-    print("=" * 60)
-    print("  Monte Carlo Benchmark: CPU vs GPU")
-    print(f"  {N_RUNS} runs per scenario + 1 warm-up")
-    print("  Timing: end-to-end simulate() incl. GPU->CPU transfer")
+    print("=" * 64)
+    print("  Monte Carlo Benchmark: full pipeline (simulate + risk)")
+    print(f"  {N_RUNS} runs + 1 warm-up per backend per scenario")
     if _GPU_AVAILABLE:
         print("  GPU sync: cp.cuda.Stream.null.synchronize()")
-    print("=" * 60)
-
-    if not _GPU_AVAILABLE:
-        print("\nWARNING: GPU not available. Running CPU-only benchmark.\n")
+    else:
+        print("  WARNING: GPU not available — CPU only")
+    print("=" * 64)
 
     for scenario in SCENARIOS:
         label = scenario["label"]
         n_assets = scenario["n_assets"]
         n_sims = scenario["n_simulations"]
 
-        print(f"\n{'─' * 60}")
-        print(f"  Scenario: {label} ({n_assets} assets, {n_sims:,} simulations)")
-        print(f"{'─' * 60}")
+        print(f"\n{'─' * 64}")
+        print(f"  {label}: {n_assets} assets x {n_sims:,} simulations")
+        print(f"{'─' * 64}")
 
         params = _make_synthetic_params(n_assets)
         initial_prices = _make_initial_prices(n_assets)
         portfolio = _make_portfolio(params)
+        weights = tuple(1.0 / n_assets for _ in range(n_assets))
 
-        # CPU benchmark
-        cpu_result = _run_benchmark(
-            engine=CpuMonteCarloEngine(seed=SEED),
-            backend_name="CPU (NumPy)",
-            params=params,
-            initial_prices=initial_prices,
-            portfolio=portfolio,
-            n_simulations=n_sims,
-            is_gpu=False,
+        # 1. CPU
+        cpu = _bench(
+            "CPU (NumPy)", _time_cpu_pipeline, params, initial_prices, portfolio, n_sims
         )
         print("\n  [CPU]")
-        _print_result(cpu_result)
+        _print_result(cpu)
 
-        # GPU benchmark
         if _GPU_AVAILABLE:
-            gpu_result = _run_benchmark(
-                engine=GpuMonteCarloEngine(seed=SEED),
-                backend_name="GPU (CuPy)",
-                params=params,
-                initial_prices=initial_prices,
-                portfolio=portfolio,
-                n_simulations=n_sims,
-                is_gpu=True,
+            # 2. GPU via domain (with tuple conversion)
+            gpu_domain = _bench(
+                "GPU via domain",
+                _time_gpu_domain_pipeline,
+                params,
+                initial_prices,
+                portfolio,
+                n_sims,
             )
-            print("\n  [GPU]")
-            _print_result(gpu_result)
+            print("\n  [GPU via domain] (simulate -> tuples -> risk)")
+            _print_result(gpu_domain)
 
-            speedup = cpu_result["median"] / gpu_result["median"]
-            print(
-                f"\n  Speedup (median): {speedup:.2f}x"
-                f" {'(GPU faster)' if speedup > 1 else '(CPU faster)'}"
+            # 3. GPU accelerated (zero tuple allocation)
+            gpu_accel = _bench(
+                "GPU accelerated",
+                _time_gpu_accelerated,
+                params,
+                initial_prices,
+                weights,
+                n_sims,
             )
-        else:
-            print("\n  [GPU] Skipped (not available)")
+            print("\n  [GPU accelerated] (all-GPU, no tuples)")
+            _print_result(gpu_accel)
 
-    print(f"\n{'=' * 60}")
-    print("  Note: CPU and GPU use different RNGs, so statistical")
-    print("  results differ slightly. This is expected.")
-    print(f"{'=' * 60}")
+            # Speedup table
+            print("\n  Speedup vs CPU (median):")
+            s1 = cpu["median"] / gpu_domain["median"]
+            s2 = cpu["median"] / gpu_accel["median"]
+            print(f"    GPU via domain:    {s1:.2f}x")
+            print(f"    GPU accelerated:   {s2:.2f}x")
+
+    print(f"\n{'=' * 64}")
+    print("  Note: RNGs differ across backends — small statistical")
+    print("  differences are expected.")
+    print(f"{'=' * 64}")
 
 
 if __name__ == "__main__":

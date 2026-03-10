@@ -61,7 +61,7 @@ class GpuMonteCarloEngine:
 
         terminal_prices = {}
         for i, ticker in enumerate(params.tickers):
-            terminal_prices[ticker] = tuple(float(x) for x in terminal_prices_cpu[i])
+            terminal_prices[ticker] = tuple(terminal_prices_cpu[i].tolist())
 
         return MonteCarloSimulationResult(
             tickers=params.tickers,

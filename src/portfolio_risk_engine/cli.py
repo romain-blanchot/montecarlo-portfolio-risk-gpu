@@ -37,20 +37,37 @@ from portfolio_risk_engine.infrastructure.simulation.cpu_monte_carlo_engine impo
     CpuMonteCarloEngine,
 )
 
-MENU = """
-============================================
-  Portfolio Monte Carlo Risk Simulator
-============================================
+try:
+    from portfolio_risk_engine.infrastructure.simulation.gpu_accelerated_pipeline import (
+        GpuAcceleratedPipeline,
+    )
 
-  1. Define portfolio
-  2. Fetch market data
-  3. Estimate parameters
-  4. Run Monte Carlo simulation
-  5. Compute risk metrics
-  6. Full pipeline
-  0. Exit
+    _GPU_AVAILABLE = True
+except Exception:
+    _GPU_AVAILABLE = False
 
-"""
+
+def _build_menu() -> str:
+    lines = [
+        "",
+        "============================================",
+        "  Portfolio Monte Carlo Risk Simulator",
+        "============================================",
+        "",
+        "  1. Define portfolio",
+        "  2. Fetch market data",
+        "  3. Estimate parameters",
+        "  4. Run Monte Carlo simulation",
+        "  5. Compute risk metrics",
+        "  6. Full pipeline (CPU)",
+    ]
+    if _GPU_AVAILABLE:
+        lines.append("  7. Full pipeline (GPU accelerated)")
+    lines += ["  0. Exit", ""]
+    return "\n".join(lines)
+
+
+MENU = _build_menu()
 
 
 class PortfolioSimulatorCLI:
@@ -65,7 +82,9 @@ class PortfolioSimulatorCLI:
         self.risk_metrics: PortfolioRiskMetrics | None = None
 
     def run(self) -> None:
-        actions = {
+        from collections.abc import Callable
+
+        actions: dict[str, Callable[[], None]] = {
             "1": self.define_portfolio,
             "2": self.fetch_market_data,
             "3": self.estimate_parameters,
@@ -73,6 +92,8 @@ class PortfolioSimulatorCLI:
             "5": self.compute_risk,
             "6": self.full_pipeline,
         }
+        if _GPU_AVAILABLE:
+            actions["7"] = self.full_pipeline_gpu
 
         while True:
             print(MENU)
@@ -108,6 +129,8 @@ class PortfolioSimulatorCLI:
             flags.append(f"Simulation: {self.simulation_result.num_simulations} paths")
         if self.risk_metrics:
             flags.append("Risk: computed")
+        if _GPU_AVAILABLE:
+            flags.append("GPU: available")
         if flags:
             print("  State: " + " | ".join(flags))
             print()
@@ -140,7 +163,6 @@ class PortfolioSimulatorCLI:
         )
 
         self.portfolio = Portfolio(positions=positions)
-        # Reset downstream state
         self.prices = None
         self.market_params = None
         self.simulation_result = None
@@ -166,7 +188,6 @@ class PortfolioSimulatorCLI:
         fetch = FetchMarketData(self._provider)
         self.prices = fetch.execute(tickers=tickers, date_range=date_range)
 
-        # Reset downstream state
         self.market_params = None
         self.simulation_result = None
         self.risk_metrics = None
@@ -182,7 +203,6 @@ class PortfolioSimulatorCLI:
         returns = ComputeLogReturns.execute(self.prices)
         self.market_params = EstimateMarketParameters().execute(returns)
 
-        # Reset downstream state
         self.simulation_result = None
         self.risk_metrics = None
 
@@ -212,7 +232,6 @@ class PortfolioSimulatorCLI:
         n_sims = int(input("Number of simulations [10000]: ").strip() or "10000")
         t_days = int(input("Time horizon in trading days [21]: ").strip() or "21")
 
-        # Last observed prices as initial prices
         initial_prices = tuple(
             self.prices.prices_by_ticker[t][-1] for t in self.market_params.tickers
         )
@@ -225,7 +244,6 @@ class PortfolioSimulatorCLI:
             time_horizon_days=t_days,
         )
 
-        # Reset downstream state
         self.risk_metrics = None
 
         print(f"Simulated {n_sims} paths over {t_days} trading days.")
@@ -249,16 +267,10 @@ class PortfolioSimulatorCLI:
         self.risk_metrics = ComputePortfolioRisk.execute(
             self.portfolio, self.simulation_result
         )
-
-        print(f"  Mean return:        {self.risk_metrics.mean_return:+.4%}")
-        print(f"  Volatility:         {self.risk_metrics.volatility:.4%}")
-        print(f"  VaR 95%:            {self.risk_metrics.var_95:.4%}")
-        print(f"  VaR 99%:            {self.risk_metrics.var_99:.4%}")
-        print(f"  Expected Shortfall 95%: {self.risk_metrics.es_95:.4%}")
-        print(f"  Expected Shortfall 99%: {self.risk_metrics.es_99:.4%}")
+        self._print_risk_metrics()
 
     def full_pipeline(self) -> None:
-        print("\n--- Full Pipeline ---")
+        print("\n--- Full Pipeline (CPU) ---")
 
         if not self.portfolio:
             self.define_portfolio()
@@ -273,6 +285,61 @@ class PortfolioSimulatorCLI:
         self.estimate_parameters()
         self.run_simulation()
         self.compute_risk()
+
+    def full_pipeline_gpu(self) -> None:
+        print("\n--- Full Pipeline (GPU accelerated) ---")
+
+        if not self.portfolio:
+            self.define_portfolio()
+            if not self.portfolio:
+                return
+
+        if not self.prices:
+            self.fetch_market_data()
+            if not self.prices:
+                return
+
+        if not self.market_params:
+            self.estimate_parameters()
+            if not self.market_params:
+                return
+
+        n_sims = int(input("Number of simulations [10000]: ").strip() or "10000")
+        t_days = int(input("Time horizon in trading days [21]: ").strip() or "21")
+
+        initial_prices = tuple(
+            self.prices.prices_by_ticker[t][-1] for t in self.market_params.tickers
+        )
+        weights = tuple(self.portfolio.weights)
+
+        pipeline = GpuAcceleratedPipeline()
+        self.risk_metrics, summary = pipeline.run_with_summary(
+            market_params=self.market_params,
+            initial_prices=initial_prices,
+            weights=weights,
+            num_simulations=n_sims,
+            time_horizon_days=t_days,
+        )
+
+        self.simulation_result = None  # no per-path data in GPU mode
+
+        print(f"Simulated {n_sims} paths over {t_days} trading days (GPU).")
+        ip_map = dict(zip(self.market_params.tickers, initial_prices))
+        for ticker_str, mean_p in summary.items():
+            s0 = ip_map.get(Ticker(ticker_str))
+            print(f"  {ticker_str}: S0={s0:.2f}, mean(S_T)={mean_p:.2f}")
+
+        self._print_risk_metrics()
+
+    def _print_risk_metrics(self) -> None:
+        if not self.risk_metrics:
+            return
+        print(f"  Mean return:            {self.risk_metrics.mean_return:+.4%}")
+        print(f"  Volatility:             {self.risk_metrics.volatility:.4%}")
+        print(f"  VaR 95%:                {self.risk_metrics.var_95:.4%}")
+        print(f"  VaR 99%:                {self.risk_metrics.var_99:.4%}")
+        print(f"  Expected Shortfall 95%: {self.risk_metrics.es_95:.4%}")
+        print(f"  Expected Shortfall 99%: {self.risk_metrics.es_99:.4%}")
 
 
 def main() -> None:
