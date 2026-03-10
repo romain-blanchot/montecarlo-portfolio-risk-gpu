@@ -93,8 +93,9 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 markers = [
     "integration: tests requiring network access (deselected by default)",
+    "gpu: tests requiring CUDA GPU (deselected by default)",
 ]
-addopts = "-m 'not integration'"
+addopts = "-m 'not integration and not gpu'"
 
 [tool.mypy]
 ignore_missing_imports = true
