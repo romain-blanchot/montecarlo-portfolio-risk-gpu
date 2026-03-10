@@ -1,14 +1,8 @@
-"""Compare CPU and GPU Monte Carlo engines on identical inputs.
+"""Timing comparison between the CPU and GPU Monte Carlo engines.
 
-This module provides :func:`compare`, which runs both engines with the same
-seed, measures wall-clock time, and returns risk metrics side-by-side so the
-caller can verify numerical agreement and measure GPU speedup.
-
-Notes
------
-The first call to :func:`compare` triggers Numba JIT compilation of the CUDA
-kernel (typically 2–5 s).  Pass ``warmup=True`` (the default) to fire a cheap
-warm-up run that absorbs the compilation time before the timed measurement.
+Note: the first run compiles the CUDA kernel via Numba JIT (~2–5 s).
+Pass warmup=True (the default) to absorb that cost in a cheap dry run
+before the actual timed measurement.
 """
 
 from __future__ import annotations
@@ -51,54 +45,33 @@ def compare(
     seed: int = 42,
     warmup: bool = True,
 ) -> ComparisonResult:
-    """Run both CPU and GPU engines and return timing + risk metrics.
+    """Run both engines on the same inputs and return timing + risk metrics.
+
+    Both engines use the same seed so risk-metric estimates should be close
+    (small differences come from their different RNG implementations).
 
     Parameters
     ----------
-    portfolio:
-        Portfolio definition (initial prices and weights).
-    market_model:
-        GBM model parameters.
-    corr_matrix:
-        Asset correlation matrix, shape ``(n_assets, n_assets)``.
-    n_paths:
-        Number of Monte Carlo paths for the timed run.
-    confidence:
-        VaR / ES confidence level.
-    seed:
-        RNG seed used by both engines (ensures same statistical population
-        for a fair comparison of risk-metric estimates).
-    warmup:
-        If ``True`` (default), run a cheap GPU pass (1 000 paths) before
-        the timed measurement to absorb Numba JIT compilation overhead.
-
-    Returns
-    -------
-    ComparisonResult
-        Dict with ``cpu_var``, ``cpu_es``, ``gpu_var``, ``gpu_es``,
-        ``cpu_time_s``, ``gpu_time_s``, ``speedup``.
+    warmup : if True, fire a cheap GPU pass first to absorb JIT compile time.
 
     Raises
     ------
-    RuntimeError
-        If Numba is not installed or no CUDA-capable GPU is detected
-        (propagated from :class:`MonteCarloGPU`).
+    RuntimeError : propagated from MonteCarloGPU if no GPU/Numba is found.
     """
     cpu_engine = MonteCarloCPU()
     gpu_engine = MonteCarloGPU()  # raises RuntimeError if GPU unavailable
 
-    # --- optional JIT warm-up -----------------------------------------------
     if warmup:
         gpu_engine.run(portfolio, market_model, corr_matrix, n_paths=1_000, seed=seed)
 
-    # --- CPU timed run -------------------------------------------------------
+    # timed CPU run
     t0 = time.perf_counter()
     cpu_losses = cpu_engine.run(
         portfolio, market_model, corr_matrix, n_paths, seed=seed
     )
     cpu_time = time.perf_counter() - t0
 
-    # --- GPU timed run -------------------------------------------------------
+    # timed GPU run
     t0 = time.perf_counter()
     gpu_losses = gpu_engine.run(
         portfolio, market_model, corr_matrix, n_paths, seed=seed

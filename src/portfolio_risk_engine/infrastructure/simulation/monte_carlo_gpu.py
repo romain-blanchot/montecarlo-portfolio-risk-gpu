@@ -1,41 +1,21 @@
-"""GPU-accelerated Monte Carlo engine via Numba CUDA.
+"""GPU Monte Carlo engine — one CUDA thread per simulation path.
 
-This module implements :class:`MonteCarloGPU`, a drop-in replacement for
-:class:`~portfolio_risk_engine.infrastructure.simulation.monte_carlo_cpu.MonteCarloCPU`
-that offloads the simulation to an NVIDIA GPU using Numba CUDA JIT kernels.
-
-Requires the ``gpu`` optional dependency group::
+Requires Numba and a CUDA-capable GPU:
 
     pip install portfolio-risk-engine[gpu]
 
-If numba is not installed or no CUDA-capable GPU is detected, instantiating
-:class:`MonteCarloGPU` raises a descriptive :exc:`RuntimeError`.
-
-GPU Optimisations Summary
--------------------------
-1. **One thread per path** — zero inter-thread communication; perfectly parallel.
-2. **Shared memory for read-only constants** — Cholesky matrix, drift, diffusion
-   scale, S0, and weights are loaded once per thread-block from global memory into
-   fast shared memory (~100× lower latency than global).
-3. **Per-thread register arrays** — current price vector ``S`` and the innovation
-   vectors ``Z_indep`` / ``Z_corr`` live in registers, the fastest memory tier.
-4. **Pre-computed drift & diffusion scale** — ``(mu - ½σ²)·dt`` and ``σ·√dt`` are
-   calculated on the CPU once before kernel launch, eliminating these operations
-   from the hot inner loop (saved: 4·n_assets ops × n_paths × n_steps).
-5. **xoroshiro128p RNG** — per-thread state means no atomic operations or global
-   synchronisation; each thread advances its own 128-bit state independently.
-6. **256 threads/block** — 8 full warps per block; hides memory-latency behind
-   arithmetic while staying within shared-memory budget (≈ 9 KB / block for
-   MAX_ASSETS = 32).
-7. **Coalesced global-memory write** — ``losses[tid]`` is written once per thread
-   with consecutive thread IDs → maximises global-memory bandwidth.
+Each call to MonteCarloGPU.run() launches a CUDA kernel where every thread
+independently simulates one complete price path for all assets over the full
+time horizon. Read-only constants (Cholesky matrix, drift, volatility) are
+loaded into shared memory once per block so the inner simulation loop reads
+from fast on-chip memory instead of slow global DRAM.
 """
 
 from __future__ import annotations
 
 import math
 import time
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import numpy as np
 
@@ -44,189 +24,213 @@ from portfolio_risk_engine.domain.market_model import MarketModel
 from portfolio_risk_engine.domain.portfolio import Portfolio
 from portfolio_risk_engine.infrastructure.simulation.base import SimulationEngine
 
-if TYPE_CHECKING:
-    pass
+# _MAX_ASSETS must be a plain integer literal because Numba needs to know the
+# size of shared/local memory arrays at JIT-compile time (before any Python
+# object exists). If you need more than 32 assets, raise this value and re-run.
+_MAX_ASSETS: int = 32
 
-# ---------------------------------------------------------------------------
-# Compile-time constants (must be resolvable by the Numba JIT compiler)
-# ---------------------------------------------------------------------------
-_MAX_ASSETS: int = 32  # maximum number of assets supported by the kernel
-_TPB: int = 256  # threads per block (= 8 warps; good occupancy heuristic)
+# Number of CUDA threads launched per block.
+# 256 = 8 warps of 32 threads — a standard sweet spot: large enough for the GPU
+# to overlap memory latency with arithmetic, small enough to let the scheduler
+# run multiple blocks on the same Streaming Multiprocessor simultaneously.
+_THREADS_PER_BLOCK: int = 256
 
-# ---------------------------------------------------------------------------
-# Optional Numba import — module still loads without numba installed
-# ---------------------------------------------------------------------------
+# We try to import Numba at module load time. If it isn't installed the module
+# still loads fine — MonteCarloGPU will raise a clear RuntimeError when you try
+# to use it, rather than crashing on import with a confusing traceback.
 _NUMBA_AVAILABLE: bool = False
 _CUDA_IS_AVAILABLE: bool = False
 
-# Always-bound references — overwritten by the successful import below.
 cuda: Any = None
 create_xoroshiro128p_states: Any = None
 xoroshiro128p_normal_float64: Any = None
 
 try:
-    from numba import cuda  # type: ignore[import-untyped,import-not-found,no-redef,assignment]
-    from numba.cuda.random import (  # type: ignore[import-untyped,import-not-found,no-redef]
+    from numba import cuda
+    from numba.cuda.random import (
         create_xoroshiro128p_states,
         xoroshiro128p_normal_float64,
     )
 
     _NUMBA_AVAILABLE = True
     try:
-        _CUDA_IS_AVAILABLE = bool(cuda.is_available())  # type: ignore[union-attr]
-    except Exception:  # noqa: BLE001
+        _CUDA_IS_AVAILABLE = bool(cuda.is_available())
+    except Exception:
         _CUDA_IS_AVAILABLE = False
 
 except ImportError:
     pass
 
-# ---------------------------------------------------------------------------
-# CUDA kernel  (compiled only when Numba is present)
-# ---------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# CUDA kernel
+# ------------------------------------------------------------------------------
+
 if _NUMBA_AVAILABLE:
 
-    @cuda.jit  # type: ignore[name-defined]
+    @cuda.jit
     def _gbm_kernel(
-        rng_states,  # xoroshiro128p states  (n_paths,)
-        S0,  # initial prices         (n_assets,)  float64
-        weights,  # portfolio weights      (n_assets,)  float64
-        drift,  # (mu - ½σ²)·dt          (n_assets,)  float64  [pre-computed CPU-side]
-        diff_scale,  # σ·√dt                  (n_assets,)  float64  [pre-computed CPU-side]
-        n_steps,  # int  — number of time-steps
-        chol,  # Cholesky factor        (n_assets, n_assets) float64 lower-triangular
-        n_assets,  # int  — actual number of assets (≤ _MAX_ASSETS)
-        losses,  # OUTPUT                 (n_paths,)   float64
+        rng_states,  # one RNG state per path (xoroshiro128p),      shape (n_paths,)
+        s0,  # initial asset prices,                         shape (n_assets,)
+        weights,  # portfolio allocation weights,                  shape (n_assets,)
+        drift,  # (mu - 0.5 * sigma²) * dt  — pre-computed,    shape (n_assets,)
+        diff_scale,  # sigma * sqrt(dt)           — pre-computed,    shape (n_assets,)
+        n_steps,  # number of daily time steps (252 for one year)
+        chol,  # lower-triangular Cholesky factor,             shape (n_assets, n_assets)
+        n_assets,  # actual number of assets in the portfolio
+        losses,  # OUTPUT: portfolio loss for each path,         shape (n_paths,)
     ):
-        """One CUDA thread simulates one Monte Carlo path end-to-end.
+        """Simulate one complete Monte Carlo path per CUDA thread.
 
-        Memory layout
-        -------------
-        Global   → shared  : S0, weights, drift, diff_scale, chol  (one load per block)
-        Shared   → registers: per-step arithmetic on Z and S arrays
-        Registers→ global  : losses[tid]  (single coalesced write at the end)
+        Execution flow per thread:
+          1. All threads in the block cooperatively load the read-only constants
+             (s0, weights, drift, diff_scale, Cholesky) into shared memory.
+          2. Each thread runs the full GBM simulation loop for its own path.
+          3. Each thread computes the final portfolio loss and writes it to
+             global memory.
+
+        Why shared memory for the constants?
+          The Cholesky matrix and drift vectors are read at every single time
+          step by every thread. Shared memory is on-chip (~4 cycle latency vs
+          ~400 cycles for global DRAM), so loading these constants once per
+          block rather than fetching them from global memory at every step
+          gives a significant reduction in memory traffic.
         """
-        # ------------------------------------------------------------------
-        # Shared memory: read-only constants, loaded cooperatively by the block
-        # Shape must be a compile-time literal — _MAX_ASSETS satisfies this.
-        # ------------------------------------------------------------------
-        s_S0 = cuda.shared.array(_MAX_ASSETS, dtype=np.float64)  # noqa: N806
-        s_weights = cuda.shared.array(_MAX_ASSETS, dtype=np.float64)  # noqa: N806
-        s_drift = cuda.shared.array(_MAX_ASSETS, dtype=np.float64)  # noqa: N806
-        s_diff_scale = cuda.shared.array(_MAX_ASSETS, dtype=np.float64)  # noqa: N806
-        s_chol = cuda.shared.array((_MAX_ASSETS, _MAX_ASSETS), dtype=np.float64)  # noqa: N806
 
-        local_tid = cuda.threadIdx.x
-        block_size = cuda.blockDim.x
+        # ── Part 1: load constants into shared memory ──────────────────────────
+        #
+        # "sm_" prefix marks shared memory arrays throughout this kernel.
+        # They live on-chip and are visible to all threads in the same block.
+        # Sizes must be compile-time literals — _MAX_ASSETS satisfies that.
 
-        # --- Cooperative load of 1-D constant vectors ----------------------
-        # Each thread loads one element; threads cycle until all n_assets loaded.
-        # This gives up to block_size-way parallelism for the load.
+        sm_s0 = cuda.shared.array(_MAX_ASSETS, dtype=np.float64)
+        sm_weights = cuda.shared.array(_MAX_ASSETS, dtype=np.float64)
+        sm_drift = cuda.shared.array(_MAX_ASSETS, dtype=np.float64)
+        sm_diff_scale = cuda.shared.array(_MAX_ASSETS, dtype=np.float64)
+        sm_chol = cuda.shared.array((_MAX_ASSETS, _MAX_ASSETS), dtype=np.float64)
+
+        local_tid = (
+            cuda.threadIdx.x
+        )  # this thread's index within the block (0 … block_size-1)
+        block_size = cuda.blockDim.x  # total number of threads in the block
+
+        # Each thread loads one slice of each 1-D vector, then jumps by block_size.
+        # The while-loop handles the case where n_assets > block_size.
         i = local_tid
         while i < n_assets:
-            s_S0[i] = S0[i]
-            s_weights[i] = weights[i]
-            s_drift[i] = drift[i]
-            s_diff_scale[i] = diff_scale[i]
+            sm_s0[i] = s0[i]
+            sm_weights[i] = weights[i]
+            sm_drift[i] = drift[i]
+            sm_diff_scale[i] = diff_scale[i]
             i += block_size
 
-        # --- Cooperative load of the Cholesky matrix -----------------------
-        # Flatten (n_assets × n_assets) into a 1-D index for easy striding.
-        flat = local_tid
+        # Load the Cholesky matrix by treating it as a flat array of n_assets²
+        # values and striding through it with the same pattern.
+        flat_idx = local_tid
         flat_size = n_assets * n_assets
-        while flat < flat_size:
-            row = flat // n_assets
-            col = flat % n_assets
-            s_chol[row, col] = chol[row, col]
-            flat += block_size
+        while flat_idx < flat_size:
+            row = flat_idx // n_assets
+            col = flat_idx % n_assets
+            sm_chol[row, col] = chol[row, col]
+            flat_idx += block_size
 
-        # All threads must see the fully loaded shared memory before proceeding.
+        # Synchronisation barrier: no thread may continue past this point until
+        # every thread in the block has finished writing to shared memory.
+        # Without this, a fast thread could start reading sm_chol before a slow
+        # thread has finished filling it.
         cuda.syncthreads()
 
-        # ------------------------------------------------------------------
-        # Early-exit for out-of-bounds threads (last block may be incomplete)
-        # ------------------------------------------------------------------
-        tid = cuda.grid(1)  # global thread index = path index
+        # ── Part 2: find which path this thread is responsible for ─────────────
+
+        path_id = cuda.grid(
+            1
+        )  # global thread index across the entire grid = path index
         n_paths = losses.shape[0]
-        if tid >= n_paths:
+
+        # The grid is rounded up to a full multiple of block_size, so the last
+        # block may contain threads that don't correspond to any path. They exit
+        # immediately without touching the output array.
+        if path_id >= n_paths:
             return
 
-        # ------------------------------------------------------------------
-        # Per-thread local arrays — live in registers (fastest tier)
-        # Unused entries (index ≥ n_assets) are simply never accessed.
-        # ------------------------------------------------------------------
-        S = cuda.local.array(_MAX_ASSETS, dtype=np.float64)
-        Z_indep = cuda.local.array(_MAX_ASSETS, dtype=np.float64)
-        Z_corr = cuda.local.array(_MAX_ASSETS, dtype=np.float64)
+        # ── Part 3: allocate per-thread working arrays (in registers) ──────────
+        #
+        # cuda.local.array lives in GPU registers — the fastest memory tier on
+        # the GPU. Each thread gets its own private copy, completely isolated
+        # from every other thread.
 
-        # Initialise current prices from shared S0
+        prices = cuda.local.array(_MAX_ASSETS, dtype=np.float64)  # current asset prices
+        z_indep = cuda.local.array(
+            _MAX_ASSETS, dtype=np.float64
+        )  # independent N(0,1) draws
+        z_corr = cuda.local.array(
+            _MAX_ASSETS, dtype=np.float64
+        )  # correlated draws (after Cholesky)
+
+        # Start every asset at its initial price.
         for i in range(n_assets):
-            S[i] = s_S0[i]
+            prices[i] = sm_s0[i]
 
-        # ==================================================================
-        # Main simulation loop  O(n_steps × n_assets²) per thread
-        # ==================================================================
+        # ── Part 4: simulate n_steps daily price moves ─────────────────────────
+
         for _ in range(n_steps):
-            # 1. Draw n_assets independent N(0,1) samples using thread-local RNG
+            # Draw one independent standard normal for each asset.
             for i in range(n_assets):
-                Z_indep[i] = xoroshiro128p_normal_float64(rng_states, tid)  # type: ignore[name-defined]
+                z_indep[i] = xoroshiro128p_normal_float64(rng_states, path_id)
 
-            # 2. Correlate innovations: Z_corr = L @ Z_indep  (L lower-triangular)
-            #    Inner loop runs at most i+1 iterations — no wasted iterations.
+            # Introduce correlations via the Cholesky transform: z_corr = L @ z_indep.
+            # Because L is lower-triangular, row i only depends on columns 0..i,
+            # which saves roughly half the multiplications compared to a full matmul.
             for i in range(n_assets):
-                acc = 0.0
+                total = 0.0
                 for j in range(i + 1):
-                    acc += s_chol[i, j] * Z_indep[j]
-                Z_corr[i] = acc
+                    total += sm_chol[i, j] * z_indep[j]
+                z_corr[i] = total
 
-            # 3. GBM update: S_t = S_{t-1} · exp(drift_i + diff_scale_i · Z_corr_i)
-            #    drift and diff_scale already incorporate dt (pre-computed on CPU)
+            # GBM update for this time step:
+            #   price(t+dt) = price(t) * exp( drift[i] + diff_scale[i] * z_corr[i] )
+            # drift and diff_scale were pre-computed on the CPU before the kernel launch
+            # to avoid redundant arithmetic inside each thread.
             for i in range(n_assets):
-                S[i] *= math.exp(s_drift[i] + s_diff_scale[i] * Z_corr[i])
+                prices[i] *= math.exp(sm_drift[i] + sm_diff_scale[i] * z_corr[i])
 
-        # ==================================================================
-        # Compute portfolio loss for this path and write to global memory
-        # Consecutive tids write to consecutive addresses → coalesced write
-        # ==================================================================
-        v0 = 0.0
-        vt = 0.0
+        # ── Part 5: compute portfolio loss and write to global memory ──────────
+        #
+        # Loss = initial portfolio value − final portfolio value.
+        # A positive value means the portfolio lost money; negative means a gain.
+        #
+        # Writing to losses[path_id]: consecutive threads have consecutive path_ids,
+        # so their writes land on consecutive memory addresses. The GPU hardware
+        # merges these into a single wide memory transaction (coalesced write),
+        # which is much more efficient than scattered random-access writes.
+
+        initial_value = 0.0
+        final_value = 0.0
         for i in range(n_assets):
-            v0 += s_weights[i] * s_S0[i]
-            vt += s_weights[i] * S[i]
+            initial_value += sm_weights[i] * sm_s0[i]
+            final_value += sm_weights[i] * prices[i]
 
-        losses[tid] = v0 - vt
+        losses[path_id] = initial_value - final_value
 
 else:
-    _gbm_kernel = None  # type: ignore[assignment]
+    _gbm_kernel = None
 
 
-# ---------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Public engine class
-# ---------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
 class MonteCarloGPU(SimulationEngine):
-    """GPU-accelerated Monte Carlo engine (Numba CUDA).
+    """GPU-accelerated Monte Carlo engine backed by the _gbm_kernel CUDA kernel.
 
-    Each CUDA thread simulates exactly one Monte Carlo path.  Read-only
-    constants (Cholesky matrix, drift, diffusion scale) are cooperatively
-    loaded into shared memory by the thread block so that the per-step
-    arithmetic exclusively hits fast on-chip memory.
-
-    Parameters
-    ----------
-    threads_per_block:
-        Number of CUDA threads per block.  Must be a multiple of the warp
-        size (32).  Default is 256 (8 warps), which is a good starting
-        point for most modern GPUs.
-
-    Raises
-    ------
-    RuntimeError
-        On instantiation if Numba is not installed or no CUDA-capable GPU
-        is detected.
+    One CUDA thread handles one complete simulation path. The class checks
+    for GPU availability at construction time and exposes the same run()
+    interface as MonteCarloCPU, so the two engines can be swapped freely
+    without changing any calling code.
     """
 
-    def __init__(self, threads_per_block: int = _TPB) -> None:
+    def __init__(self, threads_per_block: int = _THREADS_PER_BLOCK) -> None:
         if not _NUMBA_AVAILABLE:
             raise RuntimeError(
                 "Numba is not installed. "
@@ -238,6 +242,9 @@ class MonteCarloGPU(SimulationEngine):
                 "MonteCarloGPU requires an NVIDIA GPU with CUDA support and the "
                 "CUDA toolkit installed (see environment.yml)."
             )
+        # CUDA executes threads in groups of 32 called warps. A threads_per_block
+        # value that isn't a multiple of 32 leaves the last warp of each block
+        # partially idle, wasting GPU resources.
         if threads_per_block % 32 != 0:
             raise ValueError(
                 f"threads_per_block must be a multiple of 32 (warp size), "
@@ -245,7 +252,6 @@ class MonteCarloGPU(SimulationEngine):
             )
         self.threads_per_block = threads_per_block
 
-    # ------------------------------------------------------------------
     def run(
         self,
         portfolio: Portfolio,
@@ -254,14 +260,12 @@ class MonteCarloGPU(SimulationEngine):
         n_paths: int,
         seed: int | None = None,
     ) -> np.ndarray:
-        """See :class:`~portfolio_risk_engine.infrastructure.simulation.base.SimulationEngine`.
+        """Simulate n_paths price trajectories on the GPU and return the loss per path.
 
-        Notes
-        -----
-        The *first* call triggers Numba JIT compilation of the CUDA kernel
-        (typically a few seconds).  Subsequent calls reuse the compiled PTX.
-        Pass a warm-up call with a small ``n_paths`` if you need accurate
-        timing of the actual simulation.
+        The very first call triggers JIT compilation of the CUDA kernel (~3–5 s).
+        All subsequent calls reuse the compiled version and run at full speed.
+        If you need accurate timing, do a small warm-up run first to absorb
+        that compilation cost.
         """
         n_assets = portfolio.S0.shape[0]
 
@@ -272,39 +276,45 @@ class MonteCarloGPU(SimulationEngine):
             )
         if corr_matrix.shape != (n_assets, n_assets):
             raise ValueError(
-                f"corr_matrix shape {corr_matrix.shape} is inconsistent with "
+                f"corr_matrix shape {corr_matrix.shape} does not match "
                 f"n_assets={n_assets}"
             )
 
-        # --- CPU-side pre-computation (avoids repeated arithmetic in kernel) ---
+        # Pre-compute the constant GBM terms on the CPU once, before the kernel
+        # launch. This avoids repeating these calculations inside every thread
+        # at every time step (would be n_paths * n_steps redundant operations).
         chol = compute_cholesky(corr_matrix)
         dt = market_model.dt
-        drift = (market_model.mu - 0.5 * market_model.sigma**2) * dt  # (n_assets,)
-        diff_scale = market_model.sigma * np.sqrt(dt)  # (n_assets,)
+        drift = (market_model.mu - 0.5 * market_model.sigma**2) * dt
+        diff_scale = market_model.sigma * np.sqrt(dt)
 
-        # --- Initialise per-thread RNG states on the device ------------------
+        # Initialise one independent RNG state per path.
+        # xoroshiro128p is fast, passes statistical quality tests, and is the
+        # generator recommended by Numba for GPU Monte Carlo simulations.
         rng_seed = seed if seed is not None else int(time.time_ns() % (2**31))
-        rng_states = create_xoroshiro128p_states(n_paths, seed=rng_seed)  # type: ignore[name-defined]
+        rng_states = create_xoroshiro128p_states(n_paths, seed=rng_seed)
 
-        # --- Transfer constant arrays to device (small; negligible overhead) --
-        d_S0 = cuda.to_device(portfolio.S0.astype(np.float64))  # type: ignore[name-defined]
-        d_weights = cuda.to_device(portfolio.weights.astype(np.float64))  # type: ignore[name-defined]
-        d_drift = cuda.to_device(drift.astype(np.float64))  # type: ignore[name-defined]
-        d_diff_scale = cuda.to_device(diff_scale.astype(np.float64))  # type: ignore[name-defined]
-        d_chol = cuda.to_device(chol.astype(np.float64))  # type: ignore[name-defined]
+        # Copy all input arrays to GPU memory ("d_" prefix = device array).
+        d_s0 = cuda.to_device(portfolio.S0.astype(np.float64))
+        d_weights = cuda.to_device(portfolio.weights.astype(np.float64))
+        d_drift = cuda.to_device(drift.astype(np.float64))
+        d_diff_scale = cuda.to_device(diff_scale.astype(np.float64))
+        d_chol = cuda.to_device(chol.astype(np.float64))
 
-        # --- Allocate output directly on device (avoids an extra host copy) ---
-        d_losses = cuda.device_array(n_paths, dtype=np.float64)  # type: ignore[name-defined]
+        # Allocate the output array directly on the GPU so the kernel can write
+        # results straight into device memory without an extra copy.
+        d_losses = cuda.device_array(n_paths, dtype=np.float64)
 
-        # --- Compute grid dimensions -----------------------------------------
-        # Round up so the last (potentially partial) block is still launched.
+        # Round up the block count so that every path gets exactly one thread,
+        # even when n_paths is not a multiple of threads_per_block.
         threads = self.threads_per_block
         blocks = (n_paths + threads - 1) // threads
 
-        # --- Launch kernel ---------------------------------------------------
-        _gbm_kernel[blocks, threads](  # type: ignore[index]
+        # Launch the kernel. Numba's [blocks, threads] syntax is the Python
+        # equivalent of CUDA C's <<<blocks, threads>>> launch configuration.
+        _gbm_kernel[blocks, threads](
             rng_states,
-            d_S0,
+            d_s0,
             d_weights,
             d_drift,
             d_diff_scale,
@@ -314,5 +324,5 @@ class MonteCarloGPU(SimulationEngine):
             d_losses,
         )
 
-        # --- Copy result back to host and return as NumPy array --------------
-        return d_losses.copy_to_host()  # type: ignore[union-attr]
+        # Transfer results from GPU memory back to a regular NumPy array on the CPU.
+        return d_losses.copy_to_host()

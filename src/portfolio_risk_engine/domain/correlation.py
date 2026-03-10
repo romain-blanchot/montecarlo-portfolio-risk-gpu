@@ -2,24 +2,12 @@ import numpy as np
 
 
 def compute_cholesky(corr_matrix: np.ndarray) -> np.ndarray:
-    """Return the lower-triangular Cholesky factor of a correlation matrix.
+    """Validate a correlation matrix and return its lower-triangular Cholesky factor L.
 
-    Parameters
-    ----------
-    corr_matrix:
-        Square correlation matrix of shape ``(n, n)``.
+    Checks that the matrix is square, symmetric, has ones on the diagonal,
+    and is positive semi-definite. Raises ValueError otherwise.
 
-    Returns
-    -------
-    np.ndarray
-        Lower-triangular matrix ``L`` such that ``L @ L.T == corr_matrix``,
-        shape ``(n, n)``.
-
-    Raises
-    ------
-    ValueError
-        If the matrix is not square, not symmetric, does not have ones on
-        the diagonal, or is not positive semi-definite.
+    Returns L such that L @ L.T == corr_matrix.
     """
     if corr_matrix.ndim != 2 or corr_matrix.shape[0] != corr_matrix.shape[1]:
         raise ValueError(

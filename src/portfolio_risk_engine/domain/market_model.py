@@ -5,18 +5,12 @@ import numpy as np
 
 @dataclass
 class MarketModel:
-    """Parameters driving the multi-asset GBM dynamics.
+    """GBM parameters for a multi-asset simulation.
 
-    Attributes
-    ----------
-    mu:
-        Annualised drift rates per asset, shape ``(n_assets,)``.
-    sigma:
-        Annualised volatilities per asset, shape ``(n_assets,)``.
-    dt:
-        Length of a single time-step in years (e.g. ``1/252`` for daily).
-    n_steps:
-        Number of time-steps in each simulated path.
+    mu      : annualised drift per asset, shape (n_assets,)
+    sigma   : annualised volatility per asset, shape (n_assets,)
+    dt      : length of one time-step in years (e.g. 1/252 for daily)
+    n_steps : number of steps per path
     """
 
     mu: np.ndarray

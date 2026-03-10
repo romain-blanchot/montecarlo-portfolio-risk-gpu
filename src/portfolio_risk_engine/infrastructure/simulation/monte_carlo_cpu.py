@@ -7,25 +7,17 @@ from portfolio_risk_engine.infrastructure.simulation.base import SimulationEngin
 
 
 class MonteCarloCPU(SimulationEngine):
-    """Pure-NumPy Monte Carlo engine using multi-asset GBM with Cholesky correlations.
+    """NumPy Monte Carlo engine for multi-asset GBM with Cholesky correlations.
 
-    The simulation loop is vectorised over paths — all ``n_paths`` are
-    advanced one time-step at a time, keeping memory proportional to
-    ``n_paths * n_assets`` rather than the full path history.
+    Vectorised over paths: all n_paths prices are advanced together at each
+    step, so memory stays O(n_paths * n_assets) rather than storing full histories.
 
-    Algorithm (per time-step)
-    -------------------------
-    1. Draw independent innovations ``Z_indep ~ N(0, 1)``,
-       shape ``(n_paths, n_assets)``.
-    2. Correlate: ``Z_corr = Z_indep @ L.T`` where ``L`` is the lower
-       Cholesky factor of the correlation matrix.
-    3. Advance each asset price::
+    Each time step:
+        Z_indep ~ N(0, 1)  shape (n_paths, n_assets)
+        Z_corr = Z_indep @ L.T           # introduce correlations via Cholesky
+        S_t = S_{t-1} * exp((mu - 0.5*sigma^2)*dt + sigma*sqrt(dt)*Z_corr)
 
-           S_t = S_{t-1} * exp((mu - 0.5*sigma²)*dt + sigma*sqrt(dt)*Z_corr)
-
-    Terminal loss per path::
-
-        loss = V0 - weights @ S_T    where V0 = weights @ S0
+    Final loss per path: loss = V0 - weights @ S_T
     """
 
     def run(
@@ -36,10 +28,10 @@ class MonteCarloCPU(SimulationEngine):
         n_paths: int,
         seed: int | None = None,
     ) -> np.ndarray:
-        """See :class:`SimulationEngine` for the full parameter documentation."""
+        """See SimulationEngine.run for the full parameter docs."""
         n_assets = portfolio.S0.shape[0]
 
-        # --- validate dimensions ------------------------------------------------
+        # dimension checks
         if corr_matrix.shape != (n_assets, n_assets):
             raise ValueError(
                 f"corr_matrix shape {corr_matrix.shape} is inconsistent with "
@@ -50,26 +42,23 @@ class MonteCarloCPU(SimulationEngine):
                 f"market_model.mu shape {market_model.mu.shape} must be ({n_assets},)"
             )
 
-        # --- pre-compute constants ----------------------------------------------
-        chol = compute_cholesky(corr_matrix)  # (n_assets, n_assets)
+        chol = compute_cholesky(corr_matrix)
         dt = market_model.dt
-        mu = market_model.mu  # (n_assets,)
-        sigma = market_model.sigma  # (n_assets,)
+        mu = market_model.mu
+        sigma = market_model.sigma
         drift = (mu - 0.5 * sigma**2) * dt  # (n_assets,)
         diffusion_scale = sigma * np.sqrt(dt)  # (n_assets,)
 
         rng = np.random.default_rng(seed)
 
-        # --- simulate -----------------------------------------------------------
-        # S: (n_paths, n_assets) — current prices for all paths
+        # S: (n_paths, n_assets) — current prices, advanced in-place each step
         S = np.tile(portfolio.S0, (n_paths, 1)).astype(np.float64)
 
         for _ in range(market_model.n_steps):
-            z_indep = rng.standard_normal((n_paths, n_assets))  # (n_paths, n_assets)
-            z_corr = z_indep @ chol.T  # (n_paths, n_assets)
+            z_indep = rng.standard_normal((n_paths, n_assets))
+            z_corr = z_indep @ chol.T
             S = S * np.exp(drift + diffusion_scale * z_corr)
 
-        # --- compute losses -----------------------------------------------------
         v0 = portfolio.initial_value  # scalar
         vt = S @ portfolio.weights  # (n_paths,)
         return v0 - vt

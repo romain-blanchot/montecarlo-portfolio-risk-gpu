@@ -8,13 +8,8 @@ import numpy as np
 class Portfolio:
     """A weighted multi-asset portfolio.
 
-    Attributes
-    ----------
-    S0:
-        Initial asset prices, shape ``(n_assets,)``.
-    weights:
-        Portfolio weights per asset, shape ``(n_assets,)``.
-        Must sum to 1.0 (within floating-point tolerance).
+    S0      : initial asset prices, shape (n_assets,)
+    weights : allocation weights, shape (n_assets,). Must sum to 1.0.
     """
 
     S0: np.ndarray

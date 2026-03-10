@@ -7,11 +7,10 @@ from portfolio_risk_engine.domain.portfolio import Portfolio
 
 
 class SimulationEngine(ABC):
-    """Abstract interface for Monte Carlo simulation engines.
+    """Base class for Monte Carlo simulation engines.
 
-    All concrete engines — CPU or GPU — must implement :meth:`run`.
-    The signature is intentionally identical so callers can swap engines
-    without touching application code.
+    Both CPU and GPU engines expose the same run() method so they can be
+    swapped without changing any other code.
     """
 
     @abstractmethod
@@ -27,20 +26,14 @@ class SimulationEngine(ABC):
 
         Parameters
         ----------
-        portfolio:
-            Portfolio definition (initial prices and weights).
-        market_model:
-            GBM parameters (drift, volatility, time-step, number of steps).
-        corr_matrix:
-            Asset correlation matrix of shape ``(n_assets, n_assets)``.
-        n_paths:
-            Number of Monte Carlo paths to simulate.
-        seed:
-            Optional integer seed for reproducible results.
+        portfolio : initial asset prices and weights
+        market_model : GBM parameters (drift, vol, time-step, n_steps)
+        corr_matrix : asset correlation matrix, shape (n_assets, n_assets)
+        n_paths : number of Monte Carlo paths
+        seed : optional integer seed for reproducibility
 
         Returns
         -------
-        np.ndarray
-            1-D array of simulated losses, shape ``(n_paths,)``.
-            A positive value means the portfolio lost money.
+        np.ndarray of shape (n_paths,).
+        Positive values mean the portfolio lost money over the horizon.
         """

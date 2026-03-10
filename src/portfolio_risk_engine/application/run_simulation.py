@@ -27,31 +27,12 @@ def run(
     confidence: float = 0.95,
     seed: int | None = None,
 ) -> SimulationResult:
-    """Orchestrate a CPU Monte Carlo simulation and return risk metrics.
+    """Run a CPU Monte Carlo simulation and return losses + risk metrics.
 
-    Parameters
-    ----------
-    portfolio:
-        Portfolio definition (initial prices and weights).
-    market_model:
-        GBM model parameters (drift, vol, time-step, number of steps).
-    corr_matrix:
-        Asset correlation matrix, shape ``(n_assets, n_assets)``.
-    n_paths:
-        Number of simulated paths.  Default is ``10_000``.
-    confidence:
-        VaR / ES confidence level.  Default is ``0.95``.
-    seed:
-        Optional RNG seed for reproducibility.
-
-    Returns
-    -------
-    SimulationResult
-        Dict with keys:
-
-        * ``"losses"`` — ``np.ndarray`` of shape ``(n_paths,)``
-        * ``"var"``    — Value at Risk (scalar ``float``)
-        * ``"es"``     — Expected Shortfall (scalar ``float``)
+    Returns a SimulationResult dict with keys:
+        losses — np.ndarray of shape (n_paths,)
+        var    — Value at Risk (float)
+        es     — Expected Shortfall (float)
     """
     engine = MonteCarloCPU()
     losses = engine.run(portfolio, market_model, corr_matrix, n_paths, seed=seed)

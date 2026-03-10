@@ -153,11 +153,11 @@ class TestMonteCarloGPU:
         assert np.all(np.isfinite(losses))
 
     def test_distribution_mean_near_zero(self) -> None:
-        """Under risk-neutral drift the expected loss should be near zero."""
+        """With zero drift the expected loss should be near zero."""
         portfolio, mm, corr = _make_inputs()
-        # Use drift = 0.5*sigma^2 so the GBM is a martingale (expected loss ≈ 0)
+        # mu=0 means E[S(T)] = S(0), so the expected portfolio loss is ~0
         mm_neutral = MarketModel(
-            mu=0.5 * mm.sigma**2,
+            mu=np.zeros_like(mm.sigma),
             sigma=mm.sigma,
             dt=mm.dt,
             n_steps=mm.n_steps,
