@@ -4,17 +4,17 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class Currency:
     """
-        Value object representing a currency using a 3-letter ISO code.
+    Value object representing a currency using a 3-letter ISO code.
 
-        The code is normalized to uppercase and validated to ensure it
-        follows the ISO 4217 format (e.g., USD, EUR, JPY).
-        """
+    The code is normalized to uppercase and validated to ensure it
+    follows the ISO 4217 format (e.g., USD, EUR, JPY).
+    """
 
     code: str
 
     def __post_init__(self) -> None:
         """
-            Normalize and validate the currency code after initialization.
+        Normalize and validate the currency code after initialization.
         """
         v = self.code.strip().upper()
 
