@@ -9,6 +9,9 @@ from portfolio_risk_engine.domain.models.simulation_result import (
 class CpuMonteCarloEngine:
     """NumPy-based CPU implementation of the MonteCarloEngine port."""
 
+    def __init__(self, seed: int | None = None) -> None:
+        self._rng = np.random.default_rng(seed)
+
     def simulate(
         self,
         model: MultivariateGBM,
@@ -26,7 +29,7 @@ class CpuMonteCarloEngine:
         L = np.array(model.cholesky_factor)
 
         # Independent standard normals: shape (n, num_simulations)
-        Z = np.random.standard_normal((n, num_simulations))
+        Z = self._rng.standard_normal((n, num_simulations))
 
         # Correlated normals via Cholesky: shape (n, num_simulations)
         correlated_Z = L @ Z
