@@ -29,13 +29,13 @@ class TestAssetImmutability:
     def test_frozen(self):
         asset = Asset(ticker=Ticker("AAPL"), currency=Currency("USD"))
         with pytest.raises(FrozenInstanceError):
-            asset.ticker = Ticker("MSFT") # type: ignore[misc]
+            asset.ticker = Ticker("MSFT")  # type: ignore[misc]
 
         with pytest.raises(FrozenInstanceError):
-            asset.currency = Currency("EUR") # type: ignore[misc]
+            asset.currency = Currency("EUR")  # type: ignore[misc]
 
         with pytest.raises(FrozenInstanceError):
-            asset.name = "Changed" # type: ignore[misc]
+            asset.name = "Changed"  # type: ignore[misc]
 
 
 class TestAssetEquality:

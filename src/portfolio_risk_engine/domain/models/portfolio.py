@@ -4,7 +4,6 @@ from portfolio_risk_engine.domain.models.position import Position
 from portfolio_risk_engine.domain.value_objects.ticker import Ticker
 
 
-
 @dataclass(frozen=True)
 class Portfolio:
     positions: tuple[Position, ...]
@@ -28,4 +27,3 @@ class Portfolio:
     @property
     def weights(self) -> list[float]:
         return [position.weight.value for position in self.positions]
-
