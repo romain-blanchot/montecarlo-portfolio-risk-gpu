@@ -1,9 +1,10 @@
 name: CD
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
 
 env:
   REGISTRY: ghcr.io
@@ -13,11 +14,25 @@ jobs:
   cd-docker-release:
     name: Tag Docker release image
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
     permissions:
       contents: read
       packages: write
     steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          git fetch --tags
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Latest tag: $TAG"
+
       - name: Login to GHCR
+        if: steps.get_tag.outputs.tag != ''
         uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
         with:
           registry: ghcr.io
@@ -25,9 +40,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Tag release image on GHCR
+        if: steps.get_tag.outputs.tag != ''
         env:
-          TAG_NAME: ${{ github.ref_name }}
-          SHA_TAG: sha-${{ github.sha }}
+          TAG_NAME: ${{ steps.get_tag.outputs.tag }}
+          SHA_TAG: sha-${{ github.event.workflow_run.head_sha }}
         run: |
           docker pull "$REGISTRY/$IMAGE_NAME:$SHA_TAG"
           docker tag  "$REGISTRY/$IMAGE_NAME:$SHA_TAG" "$REGISTRY/$IMAGE_NAME:$TAG_NAME"
