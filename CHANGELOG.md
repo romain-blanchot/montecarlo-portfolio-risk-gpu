@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/compare/v0.1.1...v1.0.0) (2026-03-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* implement asset, portfolio, and market data features ([#29](https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/issues/29))
+
+### Features
+
+* implement asset, portfolio, and market data features ([#29](https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/issues/29)) ([a66f92e](https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/commit/a66f92e5f0054a9b30ebc874c19a3aa4988d9908))
+
 ## [0.1.1](https://github.com/romain-blanchot/montecarlo-portfolio-risk-gpu/compare/v0.1.0...v0.1.1) (2026-03-10)
 
 
