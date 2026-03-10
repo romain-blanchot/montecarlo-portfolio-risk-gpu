@@ -8,6 +8,7 @@ dependencies:
   - python=3.13
   - pip
   - numpy
-  - cuda-toolkit
+  - cuda-toolkit>=12,<13
   - pip:
-      - -e .[dev]
+      - -e .[dev,gpu]
+  - numba

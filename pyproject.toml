@@ -21,7 +21,6 @@ readme = "README.md"
 dependencies = [
     "numpy",
     "pandas",
-#    "numba",
 #    "cupy",
 #    "scipy",
 ]
@@ -48,6 +47,9 @@ Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
 DOWNLOAD = "https://pypi.org/project/portfolio-risk-engine/#files"
 
 [project.optional-dependencies]
+gpu = [
+  "numba",
+]
 dev = [
   "pre-commit",
   "ruff",
