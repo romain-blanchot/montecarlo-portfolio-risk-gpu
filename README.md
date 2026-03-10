@@ -74,6 +74,10 @@ conda env create -f environment.yml
 conda activate portfolio-risk-engine
 ```
 
+```bash
+pre-commit install         
+```
+
 ## Usage
 
 ```python
