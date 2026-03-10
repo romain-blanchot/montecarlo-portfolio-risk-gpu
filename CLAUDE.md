@@ -64,13 +64,22 @@ The source lives in `src/portfolio_risk_engine/` and follows a layered (hexagona
 
 ## CI/CD
 
-- **CI** (`ci.yml`): runs on push/PR to `main` and `integration` - installs deps, runs pytest, builds with `python -m build`
-- **Release** (`release.yml`): uses `release-please-action` on pushes to `main`
-- **Docs** (`docs.yml`): mkdocs build/deploy (not yet implemented)
-- **CD** (`cd.yml`): placeholder
+- **CI** (`ci.yml`): Runs on push/PR to `main` and `integration`. Parallel jobs:
+  - `ci-lint`: ruff check
+  - `ci-format`: ruff format --check
+  - `ci-typecheck`: mypy
+  - `ci-test`: pytest with coverage
+  - `ci-build`: python -m build (depends on all checks)
+  - `ci-docker`: Build and push Docker image to GHCR (depends on all checks)
+  - `ci-sonarqube`: SonarQube analysis (depends on test)
+- **Release** (`release.yml`): Uses release-please-action on pushes to `main` to manage changelog and tags
+- **CD** (`cd.yml`): Triggered on tag push (v*), re-tags Docker image with release version and `latest`
+- **Docs** (`docs.yml`): Deploys versioned documentation with mike:
+  - `docs-release`: Deploys versioned docs on release tags
+  - `docs-dev`: Deploys dev docs on push to `main`/`integration`
 
 ## Key Dependencies
 
 - **Runtime**: numpy, pandas (numba, cupy, scipy planned but currently commented out)
-- **Dev**: ruff, mypy, pytest, pytest-cov, pre-commit, mkdocs + mkdocs-material + mkdocstrings
+- **Dev**: ruff, mypy, pytest, pytest-cov, pre-commit, mkdocs + mkdocs-material + mkdocstrings[python] + mike
 - **Build**: hatchling + hatch-vcs (version from git tags)
