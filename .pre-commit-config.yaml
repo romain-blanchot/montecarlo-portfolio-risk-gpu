@@ -19,7 +19,6 @@ repos:
     hooks:
       - id: pytest
         name: pytest
-        entry: pytest
-        language: python
+        entry: /home/talleyrand/anaconda3/bin/conda run -n portfolio-risk-engine pytest
+        language: system
         pass_filenames: false
-        additional_dependencies: [pytest, pytest-cov]

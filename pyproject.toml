@@ -21,6 +21,7 @@ readme = "README.md"
 dependencies = [
     "numpy",
     "pandas",
+    "yfinance",
 #    "numba",
 #    "cupy",
 #    "scipy",
@@ -90,3 +91,10 @@ portfolio-sim = "portfolio_risk_engine.cli:main"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+    "integration: tests requiring network access (deselected by default)",
+]
+addopts = "-m 'not integration'"
+
+[tool.mypy]
+ignore_missing_imports = true
