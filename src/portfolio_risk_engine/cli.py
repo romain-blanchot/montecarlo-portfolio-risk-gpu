@@ -43,7 +43,7 @@ try:
     )
 
     _GPU_AVAILABLE = True
-except Exception:
+except (ImportError, RuntimeError):
     _GPU_AVAILABLE = False
 
 
@@ -113,7 +113,7 @@ class PortfolioSimulatorCLI:
                 action()
             except KeyboardInterrupt:
                 print("\nCancelled.")
-            except Exception as e:
+            except (ValueError, RuntimeError, OSError) as e:
                 print(f"\nError: {e}")
 
     def _print_state(self) -> None:
@@ -286,7 +286,7 @@ class PortfolioSimulatorCLI:
         self.run_simulation()
         self.compute_risk()
 
-    def full_pipeline_gpu(self) -> None:
+    def full_pipeline_gpu(self) -> None:  # pragma: no cover
         print("\n--- Full Pipeline (GPU accelerated) ---")
 
         if not self.portfolio:

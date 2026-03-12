@@ -187,6 +187,32 @@ class TestFrequencyEstimation:
 
         assert result.annualization_factor == 12
 
+    def test_quarterly_returns_4(self):
+        use_case = EstimateMarketParameters()
+        dates = tuple(date(2024, m, 1) for m in (1, 4, 7, 10, 12))
+        returns = _make_returns(
+            tickers=(AAPL,),
+            dates=dates,
+            returns_by_ticker={AAPL: (0.05, 0.03, -0.02, 0.04, 0.01)},
+        )
+
+        result = use_case.execute(returns)
+
+        assert result.annualization_factor == 4
+
+    def test_annual_returns_1(self):
+        use_case = EstimateMarketParameters()
+        dates = tuple(date(2020 + i, 1, 1) for i in range(5))
+        returns = _make_returns(
+            tickers=(AAPL,),
+            dates=dates,
+            returns_by_ticker={AAPL: (0.10, 0.15, -0.05, 0.08, 0.12)},
+        )
+
+        result = use_case.execute(returns)
+
+        assert result.annualization_factor == 1
+
 
 class TestEstimateValidation:
     def test_single_observation_raises(self):
