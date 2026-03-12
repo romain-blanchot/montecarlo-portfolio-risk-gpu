@@ -25,11 +25,23 @@ theme:
     - navigation.instant
     - navigation.tabs
     - navigation.top
+    - navigation.sections
     - content.code.copy
+    - content.code.annotate
 
 nav:
   - Home: index.md
-  - Architecture: architecture.md
+  - Getting Started:
+      - Installation: getting-started.md
+  - User Guide:
+      - Simulation Pipeline: user-guide/pipeline.md
+      - CLI Reference: user-guide/cli.md
+      - GPU Acceleration: user-guide/gpu.md
+  - Concepts:
+      - Architecture: architecture.md
+      - Glossary: glossary.md
+  - Benchmarks: benchmarks.md
+  - Development: development.md
   - API Reference: api.md
 
 plugins:
@@ -38,14 +50,32 @@ plugins:
       handlers:
         python:
           paths: [src]
+          options:
+            show_source: true
+            show_root_heading: true
+            members_order: source
 
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
   - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
   - toc:
       permalink: true
+
+extra_javascript:
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 
 extra:
   version:

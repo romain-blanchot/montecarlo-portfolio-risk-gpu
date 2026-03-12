@@ -32,10 +32,12 @@ ruff format .
 mypy src/
 
 # Tests
-pytest tests/                    # full suite
+pytest tests/                    # full suite (excludes integration and gpu by default)
 pytest tests/test_foo.py         # single file
 pytest tests/test_foo.py::test_bar  # single test
 pytest -x                       # stop on first failure
+pytest -m integration            # run integration tests (require network)
+pytest -m gpu                    # run GPU tests (require CUDA)
 
 # Build
 python -m build                  # produces sdist + wheel in dist/
@@ -46,13 +48,37 @@ pre-commit run --all-files
 
 ## Architecture
 
-The source lives in `src/portfolio_risk_engine/` and follows a layered (hexagonal-ish) structure:
+The source lives in `src/portfolio_risk_engine/` and follows hexagonal architecture:
 
-- **`domain/`** - Core business logic and domain models (risk metrics, portfolio entities)
-- **`application/`** - Use cases and orchestration (simulation workflows)
-- **`infrastructure/`** - External adapters (GPU compute, data sources, I/O)
-- **`cli.py`** - CLI entry point (`main()`)
-- **`__main__.py`** - Enables `python -m portfolio_risk_engine` execution
+- **`domain/`** - Core business logic, no external dependencies
+  - `value_objects/` - Immutable primitives: `Ticker`, `Currency`, `Weight`, `DateRange`
+  - `models/` - Domain entities: `Asset`, `Position`, `Portfolio`, `HistoricalPrices`, `HistoricalReturns`, `MarketParameters`, `MultivariateGBM`, `MonteCarloSimulationResult`, `PortfolioRiskMetrics`
+  - `ports/` - Abstract interfaces as `Protocol` classes: `MarketDataProvider`, `MonteCarloEngine`
+  - `services/` - Domain algorithms (e.g. `cholesky` decomposition)
+- **`application/use_cases/`** - Orchestration layer, each use case is a class with an `execute` method
+- **`infrastructure/`** - Port implementations
+  - `market_data/` - `YahooFinanceMarketDataProvider` (implements `MarketDataProvider`)
+  - `simulation/` - `CpuMonteCarloEngine` (numpy), `GpuMonteCarloEngine` (cupy), `GpuAcceleratedPipeline` (fused GPU pipeline)
+- **`cli.py`** - Interactive CLI (`PortfolioSimulatorCLI`) with menu-driven workflow
+
+### Data Pipeline
+
+The simulation flow chains use cases in this order:
+
+1. **`FetchMarketData`** - fetches historical prices via `MarketDataProvider` port → `HistoricalPrices`
+2. **`ComputeLogReturns`** - converts prices to log returns → `HistoricalReturns`
+3. **`EstimateMarketParameters`** - estimates annualized drift and covariance → `MarketParameters`
+4. **`RunMonteCarlo`** - builds `MultivariateGBM` model, runs Cholesky decomposition, delegates to `MonteCarloEngine` port → `MonteCarloSimulationResult`
+5. **`ComputePortfolioRisk`** - computes VaR/ES from simulation terminal prices → `PortfolioRiskMetrics`
+
+The `GpuAcceleratedPipeline` fuses steps 4-5 into a single GPU pass (no data transfer back to CPU until final 6 scalar metrics).
+
+### Domain Conventions
+
+- All domain models are **frozen dataclasses** with `__post_init__` validation
+- Collections use **tuples** (not lists) for immutability
+- Ports are **`Protocol` classes** — implementations don't inherit, they structurally conform
+- Value objects normalize input on construction (e.g. `Ticker` uppercases and regex-validates)
 
 ## Branch Model & Workflow
 
@@ -64,22 +90,13 @@ The source lives in `src/portfolio_risk_engine/` and follows a layered (hexagona
 
 ## CI/CD
 
-- **CI** (`ci.yml`): Runs on push/PR to `main` and `integration`. Parallel jobs:
-  - `ci-lint`: ruff check
-  - `ci-format`: ruff format --check
-  - `ci-typecheck`: mypy
-  - `ci-test`: pytest with coverage
-  - `ci-build`: python -m build (depends on all checks)
-  - `ci-docker`: Build and push Docker image to GHCR (depends on all checks)
-  - `ci-sonarqube`: SonarQube analysis (depends on test)
-- **Release** (`release.yml`): Uses release-please-action on pushes to `main` to manage changelog and tags
-- **CD** (`cd.yml`): Triggered on tag push (v*), re-tags Docker image with release version and `latest`
-- **Docs** (`docs.yml`): Deploys versioned documentation with mike:
-  - `docs-release`: Deploys versioned docs on release tags
-  - `docs-dev`: Deploys dev docs on push to `main`/`integration`
+- **CI** (`ci.yml`): Runs on push/PR to `main` and `integration`. Parallel jobs: lint, format, typecheck, test (with coverage), build, Docker (GHCR), SonarQube
+- **Release** (`release.yml`): Uses release-please-action on pushes to `main`
+- **CD** (`cd.yml`): Triggered on tag push (v*), re-tags Docker image
+- **Docs** (`docs.yml`): Deploys versioned documentation with mike
 
 ## Key Dependencies
 
-- **Runtime**: numpy, pandas (numba, cupy, scipy planned but currently commented out)
+- **Runtime**: numpy, pandas, yfinance (numba, cupy, scipy planned but currently commented out)
 - **Dev**: ruff, mypy, pytest, pytest-cov, pre-commit, mkdocs + mkdocs-material + mkdocstrings[python] + mike
 - **Build**: hatchling + hatch-vcs (version from git tags)

@@ -30,7 +30,7 @@ class GpuAcceleratedPipeline:
             )
         try:
             cp.cuda.runtime.getDeviceCount()
-        except Exception as e:
+        except (RuntimeError, cp.cuda.runtime.CUDARuntimeError) as e:
             raise RuntimeError(f"No CUDA-capable GPU detected: {e}") from e
         self._seed = seed
 
