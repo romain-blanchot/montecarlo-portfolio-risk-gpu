@@ -32,10 +32,12 @@ ruff format .
 mypy src/
 
 # Tests
-pytest tests/                    # full suite
-pytest tests/test_foo.py         # single file
+pytest                          # runs unit tests only (integration/gpu excluded by default)
+pytest tests/test_foo.py        # single file
 pytest tests/test_foo.py::test_bar  # single test
 pytest -x                       # stop on first failure
+pytest -m integration           # integration tests (require network)
+pytest -m gpu                   # GPU tests (require CUDA)
 
 # Build
 python -m build                  # produces sdist + wheel in dist/
@@ -46,13 +48,38 @@ pre-commit run --all-files
 
 ## Architecture
 
-The source lives in `src/portfolio_risk_engine/` and follows a layered (hexagonal-ish) structure:
+The source lives in `src/portfolio_risk_engine/` and follows a hexagonal (ports-and-adapters) structure:
 
-- **`domain/`** - Core business logic and domain models (risk metrics, portfolio entities)
-- **`application/`** - Use cases and orchestration (simulation workflows)
-- **`infrastructure/`** - External adapters (GPU compute, data sources, I/O)
-- **`cli.py`** - CLI entry point (`main()`)
-- **`__main__.py`** - Enables `python -m portfolio_risk_engine` execution
+- **`domain/`** - Core business logic, no external dependencies
+  - `value_objects/` - Immutable primitives: `Ticker`, `Currency`, `Weight`, `DateRange`
+  - `models/` - Frozen dataclasses: `Asset`, `Portfolio`, `Position`, `HistoricalPrices`, `HistoricalReturns`, `MarketParameters`, `MultivariateGBM`, `MonteCarloSimulationResult`, `PortfolioRiskMetrics`
+  - `ports/` - `Protocol`-based interfaces: `MarketDataProvider`, `MonteCarloEngine`
+  - `services/` - Pure domain logic (e.g. `cholesky` decomposition)
+- **`application/use_cases/`** - Orchestration layer, each use case is a class with an `execute()` method
+- **`infrastructure/`** - External adapters implementing the domain ports
+  - `market_data/` - `YahooFinanceMarketDataProvider` (implements `MarketDataProvider`)
+  - `simulation/` - `CpuMonteCarloEngine`, `GpuMonteCarloEngine` (implement `MonteCarloEngine`)
+- **`cli.py`** / **`__main__.py`** - CLI entry point
+
+### Simulation Pipeline
+
+The end-to-end flow chains use cases sequentially:
+
+```
+FetchMarketData → ComputeLogReturns → EstimateMarketParameters → RunMonteCarlo → ComputePortfolioRisk
+```
+
+1. **FetchMarketData**: pulls historical prices via a `MarketDataProvider` port → `HistoricalPrices`
+2. **ComputeLogReturns**: converts prices to log returns → `HistoricalReturns`
+3. **EstimateMarketParameters**: estimates annualized drift vector + covariance matrix → `MarketParameters`
+4. **RunMonteCarlo**: computes Cholesky factor, builds `MultivariateGBM` model, delegates to a `MonteCarloEngine` port → `MonteCarloSimulationResult` (terminal prices per ticker)
+5. **ComputePortfolioRisk**: aggregates terminal prices into portfolio-level risk metrics (VaR 95/99, ES 95/99) using loss-positive convention → `PortfolioRiskMetrics`
+
+### Key Patterns
+
+- **Domain models** are `@dataclass(frozen=True)` with invariant validation in `__post_init__`. All collections use immutable `tuple` types rather than `list`.
+- **Ports** are `typing.Protocol` classes — adapters implement them structurally (no inheritance required).
+- **Use cases** take port dependencies via constructor injection and expose a single `execute()` method.
 
 ## Branch Model & Workflow
 
@@ -62,24 +89,19 @@ The source lives in `src/portfolio_risk_engine/` and follows a layered (hexagona
 - PRs target `integration` for standard changes; hotfixes may target `main`
 - Commit messages follow Conventional Commits: `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `test:`, `ci:`
 
+## Test Structure
+
+Tests mirror the source layout under `tests/` (e.g. `tests/domain/models/test_asset.py` tests `domain/models/asset.py`). Integration tests live in `tests/integration/` and are marked with `@pytest.mark.integration`. The default pytest config in `pyproject.toml` excludes `integration` and `gpu` markers, so `pytest` runs only unit tests.
+
 ## CI/CD
 
-- **CI** (`ci.yml`): Runs on push/PR to `main` and `integration`. Parallel jobs:
-  - `ci-lint`: ruff check
-  - `ci-format`: ruff format --check
-  - `ci-typecheck`: mypy
-  - `ci-test`: pytest with coverage
-  - `ci-build`: python -m build (depends on all checks)
-  - `ci-docker`: Build and push Docker image to GHCR (depends on all checks)
-  - `ci-sonarqube`: SonarQube analysis (depends on test)
-- **Release** (`release.yml`): Uses release-please-action on pushes to `main` to manage changelog and tags
-- **CD** (`cd.yml`): Triggered on tag push (v*), re-tags Docker image with release version and `latest`
-- **Docs** (`docs.yml`): Deploys versioned documentation with mike:
-  - `docs-release`: Deploys versioned docs on release tags
-  - `docs-dev`: Deploys dev docs on push to `main`/`integration`
+- **CI** (`ci.yml`): Runs on push/PR to `main` and `integration`. Parallel jobs: lint, format, typecheck, test (with coverage), build, Docker (GHCR), SonarQube
+- **Release** (`release.yml`): release-please-action on pushes to `main`
+- **CD** (`cd.yml`): Triggered on tag push (v*), re-tags Docker image
+- **Docs** (`docs.yml`): Deploys versioned documentation with mike (mkdocs-material)
 
 ## Key Dependencies
 
-- **Runtime**: numpy, pandas (numba, cupy, scipy planned but currently commented out)
+- **Runtime**: numpy, pandas, yfinance (numba, cupy, scipy planned but currently commented out)
 - **Dev**: ruff, mypy, pytest, pytest-cov, pre-commit, mkdocs + mkdocs-material + mkdocstrings[python] + mike
 - **Build**: hatchling + hatch-vcs (version from git tags)

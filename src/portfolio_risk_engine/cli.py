@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import date
 
 from portfolio_risk_engine.application.use_cases.compute_log_returns import (
@@ -15,6 +16,10 @@ from portfolio_risk_engine.application.use_cases.fetch_market_data import (
     FetchMarketData,
 )
 from portfolio_risk_engine.application.use_cases.run_monte_carlo import RunMonteCarlo
+from portfolio_risk_engine.application.use_cases.simulate_portfolio import (
+    SUPPORTED_MODELS,
+    SimulatePortfolio,
+)
 from portfolio_risk_engine.domain.models.asset import Asset
 from portfolio_risk_engine.domain.models.historical_prices import HistoricalPrices
 from portfolio_risk_engine.domain.models.market_parameters import MarketParameters
@@ -32,6 +37,9 @@ from portfolio_risk_engine.domain.value_objects.ticker import Ticker
 from portfolio_risk_engine.domain.value_objects.weight import Weight
 from portfolio_risk_engine.infrastructure.market_data.yahoo_finance_market_data_provider import (
     YahooFinanceMarketDataProvider,
+)
+from portfolio_risk_engine.infrastructure.rendering.scenario_renderer import (
+    render_scenario,
 )
 from portfolio_risk_engine.infrastructure.simulation.cpu_monte_carlo_engine import (
     CpuMonteCarloEngine,
@@ -342,6 +350,73 @@ class PortfolioSimulatorCLI:
         print(f"  Expected Shortfall 99%: {self.risk_metrics.es_99:.4%}")
 
 
+def _run_scenario(raw_json: str) -> None:
+    config = json.loads(raw_json)
+
+    positions = tuple(
+        Position(
+            asset=Asset(ticker=Ticker(a["ticker"]), currency=Currency("USD")),
+            weight=Weight(a["weight"]),
+        )
+        for a in config["assets"]
+    )
+    portfolio = Portfolio(positions=positions)
+
+    date_range = DateRange(
+        start=date.fromisoformat(config["start_date"]),
+        end=date.fromisoformat(config["end_date"]),
+    )
+
+    num_simulations = config.get("num_simulations", 10_000)
+    time_horizon_days = config.get("time_horizon_days", 21)
+    model_name = config.get("model", "gbm")
+
+    if model_name not in SUPPORTED_MODELS:
+        print(
+            f"  Error: Unknown model '{model_name}'. "
+            f"Choose from: {', '.join(SUPPORTED_MODELS)}"
+        )
+        return
+
+    use_gpu = _GPU_AVAILABLE
+    backend = "GPU (CuPy/CUDA)" if use_gpu else "CPU (NumPy)"
+    print(f"  Model:  {model_name}")
+    print(f"  Engine: {backend}")
+
+    provider = YahooFinanceMarketDataProvider()
+
+    result = SimulatePortfolio(
+        market_data_provider=provider,
+        use_gpu=use_gpu,
+    ).execute(
+        portfolio=portfolio,
+        date_range=date_range,
+        num_simulations=num_simulations,
+        time_horizon_days=time_horizon_days,
+        model=model_name,
+    )
+
+    print(render_scenario(result))
+
+
 def main() -> None:
-    cli = PortfolioSimulatorCLI()
-    cli.run()
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(
+        description="Portfolio Monte Carlo Risk Simulator",
+    )
+    parser.add_argument(
+        "json_input",
+        nargs="?",
+        help='JSON portfolio config, e.g. \'{"assets":[...],"start_date":"...","end_date":"..."}\'',
+    )
+    args = parser.parse_args()
+
+    if args.json_input:
+        _run_scenario(args.json_input)
+    elif not sys.stdin.isatty():
+        _run_scenario(sys.stdin.read())
+    else:
+        cli = PortfolioSimulatorCLI()
+        cli.run()

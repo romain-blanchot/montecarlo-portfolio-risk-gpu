@@ -33,36 +33,48 @@ Typical use cases:
 - stress testing
 - distribution analysis
 
-## Mathematical Model
+## Simulation Models
 
-The baseline implementation assumes asset prices follow a Geometric Brownian Motion (GBM):
+Three stochastic models are available, selectable via the `"model"` field in JSON input:
 
-dS_t = μS_t dt + σS_t dW_t
+| Model | Key | Description |
+|---|---|---|
+| **Geometric Brownian Motion** | `gbm` | Baseline log-normal model: `dS = μS dt + σS dW` |
+| **Student-t GBM** | `student_t` | GBM with multivariate Student-t innovations for fat tails. Degrees of freedom estimated via method of moments |
+| **Heston Stochastic Volatility** | `heston` | Mean-reverting stochastic variance: `dS = μS dt + √v S dW_S`, `dv = κ(θ−v)dt + ξ√v dW_v` with leverage correlation ρ. Euler-Maruyama discretization with full truncation |
 
-This model is used as a simple and extensible starting point for portfolio risk simulation.
+All models support multi-asset portfolios with inter-asset correlation and automatic GPU acceleration when CUDA is available.
 
-## Numerical Method
+## Risk Metrics
 
-The engine uses Monte Carlo simulation:
-
-1. simulate market paths
-2. revalue the portfolio under each path
-3. aggregate results into risk metrics
-
-This approach is flexible, scalable, and well suited for GPU acceleration.
+- **VaR** (95%, 99%) — Value at Risk (loss-positive convention)
+- **ES** (95%, 99%) — Expected Shortfall / CVaR
+- **Skewness** and **Excess Kurtosis** — tail shape diagnostics
+- **Prob(Loss)** — probability of negative portfolio return
+- Per-asset terminal price distributions with percentiles (P5, P50, P95)
 
 ## Architecture
+
+Hexagonal (ports-and-adapters) structure:
 
 ```text
 src/portfolio_risk_engine/
 ├── domain/
 │   ├── value_objects/       # Ticker, Currency, Weight, DateRange
-│   ├── models/              # Asset, Position, Portfolio, HistoricalPrices
-│   └── ports/               # MarketDataProvider (Protocol)
+│   ├── models/              # Asset, Portfolio, MarketParameters, MultivariateGBM,
+│   │                        # StudentTGBM, HestonModel, SimulationResult, RiskMetrics
+│   ├── ports/               # MarketDataProvider, MonteCarloEngine (Protocols)
+│   └── services/            # Cholesky decomposition
 ├── application/
-│   └── use_cases/           # FetchMarketData
+│   └── use_cases/           # FetchMarketData, ComputeLogReturns, EstimateMarketParameters,
+│                            # EstimateStudentTParameters, EstimateHestonParameters,
+│                            # RunMonteCarlo, ComputePortfolioRisk, SimulatePortfolio
 ├── infrastructure/
-│   └── market_data/         # YahooFinanceMarketDataProvider
+│   ├── market_data/         # YahooFinanceMarketDataProvider
+│   ├── simulation/          # CpuMonteCarloEngine, GpuMonteCarloEngine,
+│   │                        # CpuStudentTEngine, GpuStudentTEngine,
+│   │                        # CpuHestonEngine, GpuHestonEngine
+│   └── rendering/           # Terminal scenario renderer (histograms, risk dashboard)
 ├── cli.py
 └── __main__.py
 ```
@@ -82,23 +94,50 @@ pre-commit install
 
 ## Usage
 
-### Fetch asset metadata
+### JSON CLI (recommended)
 
-```python
-from portfolio_risk_engine.infrastructure.market_data.yahoo_finance_market_data_provider import (
-    YahooFinanceMarketDataProvider,
-)
-from portfolio_risk_engine.domain.value_objects.ticker import Ticker
+Pass a JSON config directly to `portfolio-sim` for quick scenario analysis:
 
-provider = YahooFinanceMarketDataProvider()
-asset = provider.get_asset(Ticker("AAPL"))
+```bash
+# GBM (default model)
+portfolio-sim '{"assets":[{"ticker":"AAPL","weight":0.6},{"ticker":"MSFT","weight":0.4}],"start_date":"2024-01-01","end_date":"2025-01-01"}'
 
-print(asset.ticker.value)    # AAPL
-print(asset.currency.code)   # USD
-print(asset.name)            # Apple Inc.
+# Student-t GBM (fat tails)
+portfolio-sim '{"assets":[{"ticker":"AAPL","weight":0.6},{"ticker":"MSFT","weight":0.4}],"start_date":"2024-01-01","end_date":"2025-01-01","model":"student_t","num_simulations":100000}'
+
+# Heston stochastic volatility
+portfolio-sim '{"assets":[{"ticker":"AAPL","weight":0.6},{"ticker":"MSFT","weight":0.4}],"start_date":"2024-01-01","end_date":"2025-01-01","model":"heston","num_simulations":100000}'
+
+# Custom horizon (63 trading days ≈ 3 months)
+portfolio-sim '{"assets":[{"ticker":"INTC","weight":1}],"start_date":"2024-01-01","end_date":"2025-01-01","model":"heston","num_simulations":500000,"time_horizon_days":63}'
 ```
 
-### Fetch historical prices
+JSON input can also be piped via stdin:
+
+```bash
+echo '{"assets":[{"ticker":"AAPL","weight":1}],"start_date":"2024-01-01","end_date":"2025-01-01"}' | portfolio-sim
+```
+
+#### JSON fields
+
+| Field | Required | Default | Description |
+|---|---|---|---|
+| `assets` | yes | — | Array of `{"ticker": "...", "weight": ...}` |
+| `start_date` | yes | — | Historical data start (YYYY-MM-DD) |
+| `end_date` | yes | — | Historical data end (YYYY-MM-DD) |
+| `model` | no | `"gbm"` | `"gbm"`, `"student_t"`, or `"heston"` |
+| `num_simulations` | no | `10000` | Number of Monte Carlo paths |
+| `time_horizon_days` | no | `21` | Simulation horizon in trading days |
+
+GPU acceleration is automatic when CUDA + CuPy are available.
+
+### Interactive CLI
+
+```bash
+portfolio-sim   # launches interactive menu
+```
+
+### Python API
 
 ```python
 from datetime import date
@@ -168,12 +207,18 @@ The CI/CD pipeline covers:
 
 - [x] Domain model (Asset, Portfolio, HistoricalPrices)
 - [x] Market data provider (Yahoo Finance)
-- [ ] Baseline GBM simulation
-- [ ] GPU acceleration
-- [ ] Multi-asset correlation support
-- [ ] VaR and ES analytics
+- [x] GBM simulation (CPU + GPU)
+- [x] Multi-asset correlation (Cholesky decomposition)
+- [x] VaR and ES analytics
+- [x] Student-t GBM (fat tails, CPU + GPU)
+- [x] Heston stochastic volatility (CPU + GPU)
+- [x] JSON CLI for quick scenario testing
+- [x] Terminal renderer (histograms, risk dashboard, tail metrics)
+- [x] GPU auto-detection (CuPy/CUDA)
 - [ ] Benchmark suite
-- [ ] Advanced stochastic models
+- [ ] Regime-switching models
+- [ ] Jump-diffusion (Merton)
+- [ ] Short selling costs / funding rates
 
 ## License
 
