@@ -174,18 +174,6 @@ python -m portfolio_risk_engine  # alternative
 ```
 
 ```
-============================================
-  Portfolio Monte Carlo Risk Simulator
-============================================
-
-  1. Define portfolio
-  2. Fetch market data
-  3. Estimate parameters
-  4. Run Monte Carlo simulation
-  5. Compute risk metrics
-  6. Full pipeline (CPU)
-  7. Full pipeline (GPU accelerated)
-  0. Exit
 ```
 
 ## Benchmarks
