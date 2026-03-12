@@ -113,7 +113,8 @@ exclude_lines = [
     "if __name__ == .__main__.",
     "if _CUPY_AVAILABLE",
     "if _GPU_AVAILABLE",
-    "except ImportError",
+    "_GPU_AVAILABLE = ",
+    "except.*ImportError",
 ]
 fail_under = 90
 

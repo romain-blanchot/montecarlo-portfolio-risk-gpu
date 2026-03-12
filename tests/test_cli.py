@@ -295,6 +295,14 @@ class TestPrintState:
         assert "Risk: computed" in captured.out
 
 
+class TestPrintRiskMetrics:
+    def test_print_risk_metrics_without_metrics(self, capsys):
+        cli = PortfolioSimulatorCLI()
+        cli._print_risk_metrics()
+        captured = capsys.readouterr()
+        assert captured.out == ""
+
+
 class TestFullPipeline:
     def test_full_pipeline_with_existing_portfolio(self, capsys):
         mock_prices = _make_prices()
