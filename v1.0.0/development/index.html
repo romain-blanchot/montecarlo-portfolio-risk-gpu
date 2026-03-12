@@ -12,13 +12,13 @@
         <meta name="author" content="Romain Blanchot">
       
       
-        <link rel="canonical" href="https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/v1.0.0/architecture/">
+        <link rel="canonical" href="https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/v1.0.0/development/">
       
       
-        <link rel="prev" href="../user-guide/gpu/">
+        <link rel="prev" href="../benchmarks/">
       
       
-        <link rel="next" href="../glossary/">
+        <link rel="next" href="../api/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Architecture - Portfolio Risk Engine</title>
+        <title>Development - Portfolio Risk Engine</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#architecture" class="md-skip">
+        <a href="#development" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architecture
+              Development
             
           </span>
         </div>
@@ -288,13 +288,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../architecture/" class="md-tabs__link">
           
   
   
@@ -329,9 +327,11 @@
   
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../development/" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
         
   
   
@@ -669,31 +669,26 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -711,7 +706,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -726,37 +721,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
         
   
   
@@ -772,109 +740,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#layer-overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Layer Overview
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dependency-rule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dependency Rule
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-pipeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Data Pipeline
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Data Pipeline">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#step-details" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step Details
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#domain-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Domain Model
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#compute-backends" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Compute Backends
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#project-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Project Structure
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -946,10 +811,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../development/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -965,6 +857,142 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linting-formatting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linting &amp; Formatting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-checking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type Checking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-commit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Organization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#branch-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commit-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit Messages
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1023,44 +1051,77 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#layer-overview" class="md-nav__link">
+  <a href="#commands" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Layer Overview
+        Commands
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dependency-rule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dependency Rule
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-pipeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Data Pipeline
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Data Pipeline">
+    <nav class="md-nav" aria-label="Commands">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#step-details" class="md-nav__link">
+  <a href="#linting-formatting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step Details
+        Linting &amp; Formatting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-checking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type Checking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-commit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
       
     </span>
   </a>
@@ -1073,10 +1134,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#domain-model" class="md-nav__link">
+  <a href="#test-organization" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Domain Model
+        Test Organization
       
     </span>
   </a>
@@ -1084,10 +1145,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#compute-backends" class="md-nav__link">
+  <a href="#branch-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Compute Backends
+        Branch Model
       
     </span>
   </a>
@@ -1095,10 +1156,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#project-structure" class="md-nav__link">
+  <a href="#commit-messages" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Project Structure
+        Commit Messages
       
     </span>
   </a>
@@ -1125,316 +1186,133 @@
   
 
 
-<h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
-<p>The Portfolio Risk Engine follows a <strong>hexagonal (ports &amp; adapters) architecture</strong> with three layers. Domain logic is fully isolated from infrastructure concerns.</p>
-<h2 id="layer-overview">Layer Overview<a class="headerlink" href="#layer-overview" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TB
-    subgraph CLI["CLI Layer"]
-        cli[portfolio-sim&lt;br/&gt;Interactive menu]
-    end
-
-    subgraph APP["Application Layer"]
-        direction LR
-        uc1[FetchMarketData]
-        uc2[ComputeLogReturns]
-        uc3[EstimateMarketParameters]
-        uc4[RunMonteCarlo]
-        uc5[ComputePortfolioRisk]
-    end
-
-    subgraph DOMAIN["Domain Layer"]
-        direction TB
-        subgraph VO["Value Objects"]
-            ticker[Ticker]
-            currency[Currency]
-            weight[Weight]
-            daterange[DateRange]
-        end
-        subgraph MODELS["Models"]
-            asset[Asset]
-            position[Position]
-            portfolio[Portfolio]
-            hp[HistoricalPrices]
-            hr[HistoricalReturns]
-            mp[MarketParameters]
-            gbm[MultivariateGBM]
-            sr[SimulationResult]
-            rm[RiskMetrics]
-        end
-        subgraph PORTS["Ports"]
-            mdp[MarketDataProvider&lt;br/&gt;Protocol]
-            mce[MonteCarloEngine&lt;br/&gt;Protocol]
-        end
-        subgraph SERVICES["Services"]
-            chol[cholesky]
-        end
-    end
-
-    subgraph INFRA["Infrastructure Layer"]
-        yahoo[YahooFinance&lt;br/&gt;MarketDataProvider]
-        cpu[CpuMonteCarlo&lt;br/&gt;Engine]
-        gpu[GpuMonteCarlo&lt;br/&gt;Engine]
-        gpuaccel[GpuAccelerated&lt;br/&gt;Pipeline]
-    end
-
-    cli --&gt; APP
-    APP --&gt; DOMAIN
-    yahoo -.-&gt;|implements| mdp
-    cpu -.-&gt;|implements| mce
-    gpu -.-&gt;|implements| mce
-
-    style DOMAIN fill:#e8eaf6,stroke:#3f51b5
-    style APP fill:#e3f2fd,stroke:#2196f3
-    style INFRA fill:#fce4ec,stroke:#e91e63
-    style CLI fill:#e8f5e9,stroke:#4caf50</code></pre>
-<h2 id="dependency-rule">Dependency Rule<a class="headerlink" href="#dependency-rule" title="Permanent link">&para;</a></h2>
-<p>Dependencies point <strong>inward</strong> — infrastructure and application depend on domain, never the reverse.</p>
-<pre class="mermaid"><code>graph LR
-    INFRA[Infrastructure] --&gt;|depends on| DOMAIN[Domain]
-    APP[Application] --&gt;|depends on| DOMAIN
-    CLI --&gt;|depends on| APP
-    CLI --&gt;|depends on| INFRA
-
-    DOMAIN -.-x|never depends on| INFRA
-    DOMAIN -.-x|never depends on| APP
-
-    style DOMAIN fill:#e8eaf6,stroke:#3f51b5,stroke-width:3px</code></pre>
-<ul>
-<li><strong>Domain</strong> defines <code>Protocol</code> interfaces (ports) with zero external dependencies</li>
-<li><strong>Infrastructure</strong> provides concrete implementations (adapters)</li>
-<li><strong>Application</strong> orchestrates domain operations via use cases</li>
-</ul>
-<h2 id="data-pipeline">Data Pipeline<a class="headerlink" href="#data-pipeline" title="Permanent link">&para;</a></h2>
-<p>The simulation flow chains five use cases in sequence. Each use case transforms one domain model into the next:</p>
-<pre class="mermaid"><code>flowchart LR
-    A["📊 FetchMarketData"] --&gt; B["📈 ComputeLogReturns"]
-    B --&gt; C["📐 EstimateMarket&lt;br/&gt;Parameters"]
-    C --&gt; D["🎲 RunMonteCarlo"]
-    D --&gt; E["⚠️ ComputePortfolio&lt;br/&gt;Risk"]
-
-    A1[/"HistoricalPrices"/] --&gt; B
-    B1[/"HistoricalReturns"/] --&gt; C
-    C1[/"MarketParameters"/] --&gt; D
-    D1[/"SimulationResult"/] --&gt; E
-    E1[/"PortfolioRiskMetrics"/]
-
-    A --&gt; A1
-    B --&gt; B1
-    C --&gt; C1
-    D --&gt; D1
-    E --&gt; E1
-
-    style A fill:#bbdefb
-    style B fill:#bbdefb
-    style C fill:#bbdefb
-    style D fill:#bbdefb
-    style E fill:#bbdefb
-    style A1 fill:#fff9c4
-    style B1 fill:#fff9c4
-    style C1 fill:#fff9c4
-    style D1 fill:#fff9c4
-    style E1 fill:#c8e6c9</code></pre>
-<h3 id="step-details">Step Details<a class="headerlink" href="#step-details" title="Permanent link">&para;</a></h3>
+<h1 id="development">Development<a class="headerlink" href="#development" title="Permanent link">&para;</a></h1>
+<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h2>
+<h3 id="linting-formatting">Linting &amp; Formatting<a class="headerlink" href="#linting-formatting" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Lint (ruff)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>ruff<span class="w"> </span>check<span class="w"> </span>.
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Auto-fix lint issues</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>ruff<span class="w"> </span>check<span class="w"> </span>.<span class="w"> </span>--fix
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Format</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>ruff<span class="w"> </span>format<span class="w"> </span>.
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Check format without modifying</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>ruff<span class="w"> </span>format<span class="w"> </span>.<span class="w"> </span>--check
+</code></pre></div>
+<h3 id="type-checking">Type Checking<a class="headerlink" href="#type-checking" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mypy<span class="w"> </span>src/
+</code></pre></div>
+<h3 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Full unit test suite (excludes integration and GPU tests by default)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>pytest<span class="w"> </span>tests/
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Single file</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>pytest<span class="w"> </span>tests/domain/models/test_portfolio.py
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1"># Single test</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>pytest<span class="w"> </span>tests/domain/models/test_portfolio.py::test_portfolio_weights_must_sum_to_one
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="c1"># Stop on first failure</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>pytest<span class="w"> </span>-x
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="c1"># With coverage</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>pytest<span class="w"> </span>--cov<span class="o">=</span>src<span class="w"> </span>--cov-report<span class="o">=</span>term-missing
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="c1"># Integration tests (require network access)</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>pytest<span class="w"> </span>-m<span class="w"> </span>integration
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="c1"># GPU tests (require CUDA)</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>pytest<span class="w"> </span>-m<span class="w"> </span>gpu
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Default Test Selection</p>
+<p><code>pyproject.toml</code> sets <code>addopts = "-m 'not integration and not gpu'"</code> so integration and GPU tests are excluded by default.</p>
+</div>
+<h3 id="pre-commit">Pre-commit<a class="headerlink" href="#pre-commit" title="Permanent link">&para;</a></h3>
+<p>Runs ruff (lint + format), mypy, and pytest:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
+</code></pre></div>
+<h3 id="build">Build<a class="headerlink" href="#build" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>-m<span class="w"> </span>build
+</code></pre></div>
+<p>Produces sdist + wheel in <code>dist/</code>. Version is derived from git tags via <code>hatch-vcs</code>.</p>
+<h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Serve locally</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>mkdocs<span class="w"> </span>serve
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Build static site</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>mkdocs<span class="w"> </span>build
+</code></pre></div>
+<h2 id="test-organization">Test Organization<a class="headerlink" href="#test-organization" title="Permanent link">&para;</a></h2>
+<p>Tests mirror the source structure:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>tests/
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>├── domain/
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>│   ├── value_objects/    # Ticker, Currency, Weight, DateRange
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>│   ├── models/           # Asset, Portfolio, MarketParameters, ...
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>│   └── services/         # Cholesky
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>├── application/
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>│   └── use_cases/        # Each use case has its own test file
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>├── infrastructure/
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>│   ├── market_data/      # YahooFinance provider
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>│   └── simulation/       # CPU + GPU engines
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>├── integration/          # End-to-end tests (marked @pytest.mark.integration)
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>└── test_cli.py           # CLI interface tests
+</code></pre></div>
+<h2 id="branch-model">Branch Model<a class="headerlink" href="#branch-model" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Step</th>
-<th>Use Case</th>
-<th>Input</th>
-<th>Output</th>
-<th>Key Operation</th>
+<th>Branch</th>
+<th>Purpose</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td><code>FetchMarketData</code></td>
-<td>Tickers + DateRange</td>
-<td><code>HistoricalPrices</code></td>
-<td>Yahoo Finance API call</td>
+<td><code>main</code></td>
+<td>Stable / production</td>
 </tr>
 <tr>
-<td>2</td>
-<td><code>ComputeLogReturns</code></td>
-<td><code>HistoricalPrices</code></td>
-<td><code>HistoricalReturns</code></td>
-<td><span class="arithmatex">\(r_t = \ln(S_t / S_{t-1})\)</span></td>
+<td><code>integration</code></td>
+<td>Staging / pre-production</td>
 </tr>
 <tr>
-<td>3</td>
-<td><code>EstimateMarketParameters</code></td>
-<td><code>HistoricalReturns</code></td>
-<td><code>MarketParameters</code></td>
-<td>Annualized drift + covariance</td>
+<td><code>feat/...</code></td>
+<td>New features</td>
 </tr>
 <tr>
-<td>4</td>
-<td><code>RunMonteCarlo</code></td>
-<td><code>MarketParameters</code></td>
-<td><code>MonteCarloSimulationResult</code></td>
-<td>Cholesky → GBM → terminal prices</td>
+<td><code>fix/...</code></td>
+<td>Bug fixes</td>
 </tr>
 <tr>
-<td>5</td>
-<td><code>ComputePortfolioRisk</code></td>
-<td>Simulation + Portfolio</td>
-<td><code>PortfolioRiskMetrics</code></td>
-<td>Weighted returns → VaR/ES</td>
+<td><code>chore/...</code></td>
+<td>Maintenance</td>
+</tr>
+<tr>
+<td><code>docs/...</code></td>
+<td>Documentation</td>
+</tr>
+<tr>
+<td><code>refactor/...</code></td>
+<td>Refactoring</td>
+</tr>
+<tr>
+<td><code>hotfix/...</code></td>
+<td>Urgent fixes (target <code>main</code>)</td>
 </tr>
 </tbody>
 </table>
-<h2 id="domain-model">Domain Model<a class="headerlink" href="#domain-model" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>classDiagram
-    class Ticker {
-        +str value
-        __post_init__() validates
-    }
-    class Currency {
-        +str code
-    }
-    class Weight {
-        +float value
-        0.0 ≤ value ≤ 1.0
-    }
-    class DateRange {
-        +date start
-        +date end
-        start &lt; end
-    }
-
-    class Asset {
-        +Ticker ticker
-        +Currency currency
-        +str? name
-    }
-    class Position {
-        +Asset asset
-        +Weight weight
-    }
-    class Portfolio {
-        +tuple~Position~ positions
-        +tickers() list~Ticker~
-        +weights() list~float~
-        Σ weights = 1.0
-    }
-
-    class HistoricalPrices {
-        +tuple~Ticker~ tickers
-        +tuple~date~ dates
-        +dict prices_by_ticker
-    }
-    class HistoricalReturns {
-        +tuple~Ticker~ tickers
-        +tuple~date~ dates
-        +dict returns_by_ticker
-    }
-
-    class MarketParameters {
-        +tuple~Ticker~ tickers
-        +tuple~float~ drift_vector
-        +tuple~tuple~float~~ covariance_matrix
-        +int annualization_factor
-    }
-    class MultivariateGBM {
-        +MarketParameters market_parameters
-        +tuple~tuple~float~~ cholesky_factor
-    }
-
-    class MonteCarloSimulationResult {
-        +tuple~Ticker~ tickers
-        +tuple~float~ initial_prices
-        +dict terminal_prices
-        +int num_simulations
-        +int time_horizon_days
-    }
-    class PortfolioRiskMetrics {
-        +float mean_return
-        +float volatility
-        +float var_95
-        +float var_99
-        +float es_95
-        +float es_99
-    }
-
-    Asset --&gt; Ticker
-    Asset --&gt; Currency
-    Position --&gt; Asset
-    Position --&gt; Weight
-    Portfolio --&gt; Position
-
-    HistoricalPrices --&gt; Ticker
-    HistoricalReturns --&gt; Ticker
-    MarketParameters --&gt; Ticker
-    MultivariateGBM --&gt; MarketParameters
-    MonteCarloSimulationResult --&gt; Ticker</code></pre>
-<h2 id="compute-backends">Compute Backends<a class="headerlink" href="#compute-backends" title="Permanent link">&para;</a></h2>
-<p>The engine supports two execution backends through the <code>MonteCarloEngine</code> protocol:</p>
-<pre class="mermaid"><code>graph TB
-    subgraph PROTOCOL["Port (Protocol)"]
-        MCE[MonteCarloEngine&lt;br/&gt;simulate]
-    end
-
-    subgraph CPU["CPU Backend"]
-        CPUE[CpuMonteCarloEngine&lt;br/&gt;NumPy + np.random]
-    end
-
-    subgraph GPU["GPU Backends"]
-        GPUE[GpuMonteCarloEngine&lt;br/&gt;CuPy arrays]
-        GPUA[GpuAcceleratedPipeline&lt;br/&gt;Fused simulate + risk]
-    end
-
-    CPUE -.-&gt;|implements| MCE
-    GPUE -.-&gt;|implements| MCE
-    GPUA -.-&gt;|bypasses port| MCE
-
-    style PROTOCOL fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px
-    style CPU fill:#e8f5e9,stroke:#4caf50
-    style GPU fill:#fff3e0,stroke:#ff9800</code></pre>
-<table>
-<thead>
-<tr>
-<th>Backend</th>
-<th>Library</th>
-<th>Data Path</th>
-<th>Best For</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>CpuMonteCarloEngine</code></td>
-<td>NumPy</td>
-<td>CPU → tuples → CPU</td>
-<td>Development, small-scale</td>
-</tr>
-<tr>
-<td><code>GpuMonteCarloEngine</code></td>
-<td>CuPy</td>
-<td>GPU → tuples → CPU</td>
-<td>Medium scale, compatible with domain pipeline</td>
-</tr>
-<tr>
-<td><code>GpuAcceleratedPipeline</code></td>
-<td>CuPy</td>
-<td>GPU → GPU → 6 scalars</td>
-<td>Production, large-scale (zero tuple allocation)</td>
-</tr>
-</tbody>
-</table>
-<p>The <code>GpuAcceleratedPipeline</code> fuses simulation and risk computation into a single GPU pass — only 6 scalar floats (the risk metrics) are transferred back to CPU. This avoids the overhead of materializing millions of terminal prices as Python tuples.</p>
-<h2 id="project-structure">Project Structure<a class="headerlink" href="#project-structure" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>src/portfolio_risk_engine/
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── domain/
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   ├── value_objects/          # Ticker, Currency, Weight, DateRange
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   ├── models/                 # Asset, Position, Portfolio, ...
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   ├── ports/                  # MarketDataProvider, MonteCarloEngine (Protocol)
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   └── services/               # cholesky()
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>├── application/
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   └── use_cases/              # FetchMarketData, ComputeLogReturns, ...
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>├── infrastructure/
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│   ├── market_data/            # YahooFinanceMarketDataProvider
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│   └── simulation/             # CpuMonteCarloEngine, Gpu*
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>├── cli.py                      # Interactive CLI (PortfolioSimulatorCLI)
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>└── __main__.py                 # python -m portfolio_risk_engine
+<p>PRs target <code>integration</code> for standard changes; hotfixes may target <code>main</code>.</p>
+<h2 id="commit-messages">Commit Messages<a class="headerlink" href="#commit-messages" title="Permanent link">&para;</a></h2>
+<p>Follow <a href="https://www.conventionalcommits.org/">Conventional Commits</a>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>feat: add stress testing use case
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>fix: handle single-ticker covariance edge case
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>docs: update architecture diagram
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>refactor: extract cholesky into domain service
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>chore: update ruff to v0.15
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>test: add GPU engine reproducibility test
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>ci: add SonarQube analysis job
 </code></pre></div>
 
 
