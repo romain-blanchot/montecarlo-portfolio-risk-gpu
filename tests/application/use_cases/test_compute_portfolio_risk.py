@@ -133,12 +133,10 @@ class TestComputePortfolioRiskValidation:
 
 class TestComputePortfolioRiskStatistical:
     def test_var_ordering(self):
-        np.random.seed(42)
+        rng = np.random.default_rng(42)
         portfolio = _make_portfolio((AAPL, 1.0))
         # Generate returns with known distribution
-        terminal = tuple(
-            float(x) for x in 100.0 * np.exp(np.random.normal(0.0, 0.2, 10_000))
-        )
+        terminal = tuple(float(x) for x in 100.0 * np.exp(rng.normal(0.0, 0.2, 10_000)))
         sim = _make_sim_result(
             tickers=(AAPL,),
             initial_prices=(100.0,),

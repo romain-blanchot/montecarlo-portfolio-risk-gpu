@@ -12,60 +12,79 @@ GPU-accelerated Monte Carlo engine for portfolio risk simulation and market risk
 
 ## Overview
 
+This engine simulates thousands to millions of market scenarios using **Geometric Brownian Motion** (GBM) to estimate the distribution of future portfolio values and derive downside risk measures (VaR, Expected Shortfall).
 
-This project implements a GPU-accelerated Monte Carlo engine to simulate multi-asset portfolio dynamics and estimate risk metrics such as Value at Risk (VaR) and Expected Shortfall.
-
-
-It is designed for:
-- quantitative finance experimentation
-- portfolio risk analysis
-- CPU vs GPU performance comparison
-- extension toward more advanced market models
-
-## Financial Context
-
-Portfolio risk cannot be assessed from a single forecast. This engine simulates many market scenarios to estimate the distribution of future portfolio values and derive downside risk measures.
-
-Typical use cases:
-- Value-at-Risk
-- Expected Shortfall
-- scenario analysis
-- stress testing
-- distribution analysis
-
-## Mathematical Model
-
-The baseline implementation assumes asset prices follow a Geometric Brownian Motion (GBM):
-
-dS_t = μS_t dt + σS_t dW_t
-
-This model is used as a simple and extensible starting point for portfolio risk simulation.
-
-## Numerical Method
-
-The engine uses Monte Carlo simulation:
-
-1. simulate market paths
-2. revalue the portfolio under each path
-3. aggregate results into risk metrics
-
-This approach is flexible, scalable, and well suited for GPU acceleration.
+**Use cases**: Value-at-Risk, Expected Shortfall, scenario analysis, stress testing, strategy comparison, CPU/GPU performance benchmarking.
 
 ## Architecture
 
-```text
-src/portfolio_risk_engine/
-├── domain/
-│   ├── value_objects/       # Ticker, Currency, Weight, DateRange
-│   ├── models/              # Asset, Position, Portfolio, HistoricalPrices
-│   └── ports/               # MarketDataProvider (Protocol)
-├── application/
-│   └── use_cases/           # FetchMarketData
-├── infrastructure/
-│   └── market_data/         # YahooFinanceMarketDataProvider
-├── cli.py
-└── __main__.py
+The project follows **hexagonal (ports & adapters) architecture** with domain logic fully isolated from infrastructure:
+
+```mermaid
+graph TB
+    subgraph CLI["CLI Layer"]
+        cli[portfolio-sim]
+    end
+
+    subgraph APP["Application Layer — Use Cases"]
+        direction LR
+        uc1[FetchMarketData]
+        uc2[ComputeLogReturns]
+        uc3[EstimateMarket<br/>Parameters]
+        uc4[RunMonteCarlo]
+        uc5[ComputePortfolio<br/>Risk]
+    end
+
+    subgraph DOMAIN["Domain Layer"]
+        direction LR
+        vo[Value Objects<br/>Ticker, Currency,<br/>Weight, DateRange]
+        models[Models<br/>Asset, Portfolio,<br/>MarketParameters, ...]
+        ports[Ports<br/>MarketDataProvider,<br/>MonteCarloEngine]
+        services[Services<br/>cholesky]
+    end
+
+    subgraph INFRA["Infrastructure Layer — Adapters"]
+        direction LR
+        yahoo[YahooFinance<br/>Provider]
+        cpu[CPU Engine<br/>NumPy]
+        gpu[GPU Engine<br/>CuPy]
+        gpuaccel[GPU Accelerated<br/>Pipeline]
+    end
+
+    cli --> APP
+    APP --> DOMAIN
+    yahoo -.->|implements| ports
+    cpu -.->|implements| ports
+    gpu -.->|implements| ports
+
+    style DOMAIN fill:#e8eaf6,stroke:#3f51b5
+    style APP fill:#e3f2fd,stroke:#2196f3
+    style INFRA fill:#fce4ec,stroke:#e91e63
+    style CLI fill:#e8f5e9,stroke:#4caf50
 ```
+
+### Data Pipeline
+
+```mermaid
+flowchart LR
+    A["FetchMarketData"] -->|HistoricalPrices| B["ComputeLogReturns"]
+    B -->|HistoricalReturns| C["EstimateMarket<br/>Parameters"]
+    C -->|MarketParameters| D["RunMonteCarlo"]
+    D -->|SimulationResult| E["ComputePortfolio<br/>Risk"]
+    E -->|PortfolioRiskMetrics| F(["VaR / ES"])
+
+    style F fill:#c8e6c9,stroke:#4caf50,stroke-width:2px
+```
+
+## Mathematical Model
+
+Asset prices follow Geometric Brownian Motion:
+
+$$dS_t = \mu S_t \, dt + \sigma S_t \, dW_t$$
+
+Terminal price: $S_T = S_0 \exp\left[(\mu - \sigma^2/2)T + \sqrt{T} \cdot L \cdot Z\right]$
+
+where $L$ is the Cholesky factor of the covariance matrix and $Z \sim \mathcal{N}(0, I)$.
 
 ## Installation
 
@@ -74,106 +93,176 @@ git clone git@github.com:romain-blanchot/montecarlo-portfolio-risk-gpu.git
 cd montecarlo-portfolio-risk-gpu
 conda env create -f environment.yml
 conda activate portfolio-risk-engine
-```
-
-```bash
 pre-commit install
 ```
 
-## Usage
+For GPU support: `pip install cupy-cuda12x`
 
-### Fetch asset metadata
+## Quick Start
+
+### Python API
 
 ```python
-from portfolio_risk_engine.infrastructure.market_data.yahoo_finance_market_data_provider import (
-    YahooFinanceMarketDataProvider,
-)
+from portfolio_risk_engine.domain.models.asset import Asset
+from portfolio_risk_engine.domain.models.market_parameters import MarketParameters
+from portfolio_risk_engine.domain.models.portfolio import Portfolio
+from portfolio_risk_engine.domain.models.position import Position
+from portfolio_risk_engine.domain.value_objects.currency import Currency
 from portfolio_risk_engine.domain.value_objects.ticker import Ticker
+from portfolio_risk_engine.domain.value_objects.weight import Weight
+from portfolio_risk_engine.application.use_cases.run_monte_carlo import RunMonteCarlo
+from portfolio_risk_engine.application.use_cases.compute_portfolio_risk import ComputePortfolioRisk
+from portfolio_risk_engine.infrastructure.simulation.cpu_monte_carlo_engine import CpuMonteCarloEngine
 
-provider = YahooFinanceMarketDataProvider()
-asset = provider.get_asset(Ticker("AAPL"))
+# Define portfolio
+portfolio = Portfolio(positions=(
+    Position(asset=Asset(ticker=Ticker("AAPL"), currency=Currency("USD")), weight=Weight(0.5)),
+    Position(asset=Asset(ticker=Ticker("MSFT"), currency=Currency("USD")), weight=Weight(0.3)),
+    Position(asset=Asset(ticker=Ticker("GOOGL"), currency=Currency("USD")), weight=Weight(0.2)),
+))
 
-print(asset.ticker.value)    # AAPL
-print(asset.currency.code)   # USD
-print(asset.name)            # Apple Inc.
+# Market parameters (annualized drift + covariance)
+params = MarketParameters(
+    tickers=(Ticker("AAPL"), Ticker("MSFT"), Ticker("GOOGL")),
+    drift_vector=(0.12, 0.10, 0.08),
+    covariance_matrix=(
+        (0.0784, 0.0252, 0.0196),
+        (0.0252, 0.0324, 0.0180),
+        (0.0196, 0.0180, 0.0484),
+    ),
+    annualization_factor=252,
+)
+
+# Simulate + risk
+engine = CpuMonteCarloEngine(seed=42)
+sim = RunMonteCarlo(engine).execute(
+    market_params=params,
+    initial_prices=(180.0, 380.0, 140.0),
+    num_simulations=50_000,
+    time_horizon_days=21,
+)
+
+risk = ComputePortfolioRisk.execute(portfolio, sim)
+print(f"VaR 95%: {risk.var_95:.4%}")
+print(f"ES  95%: {risk.es_95:.4%}")
 ```
 
-### Fetch historical prices
+### With Real Market Data
 
 ```python
 from datetime import date
 from portfolio_risk_engine.application.use_cases.fetch_market_data import FetchMarketData
-from portfolio_risk_engine.infrastructure.market_data.yahoo_finance_market_data_provider import (
-    YahooFinanceMarketDataProvider,
-)
-from portfolio_risk_engine.domain.value_objects.ticker import Ticker
+from portfolio_risk_engine.application.use_cases.compute_log_returns import ComputeLogReturns
+from portfolio_risk_engine.application.use_cases.estimate_market_parameters import EstimateMarketParameters
+from portfolio_risk_engine.infrastructure.market_data.yahoo_finance_market_data_provider import YahooFinanceMarketDataProvider
 from portfolio_risk_engine.domain.value_objects.date_range import DateRange
 
 provider = YahooFinanceMarketDataProvider()
-use_case = FetchMarketData(provider)
-
-result = use_case.execute(
+prices = FetchMarketData(provider).execute(
     tickers=(Ticker("AAPL"), Ticker("MSFT")),
-    date_range=DateRange(start=date(2024, 1, 1), end=date(2024, 3, 1)),
+    date_range=DateRange(start=date(2023, 1, 1), end=date(2024, 1, 1)),
 )
+returns = ComputeLogReturns.execute(prices)
+params = EstimateMarketParameters().execute(returns)
+```
 
-print(len(result.dates))                       # 40 (trading days)
-print(result.prices_by_ticker[Ticker("AAPL")][:3])  # (183.73, 182.35, 180.03)
+### CLI
+
+```bash
+portfolio-sim                    # interactive menu
+python -m portfolio_risk_engine  # alternative
+```
+
+```
+============================================
+  Portfolio Monte Carlo Risk Simulator
+============================================
+
+  1. Define portfolio
+  2. Fetch market data
+  3. Estimate parameters
+  4. Run Monte Carlo simulation
+  5. Compute risk metrics
+  6. Full pipeline (CPU)
+  7. Full pipeline (GPU accelerated)
+  0. Exit
 ```
 
 ## Benchmarks
 
-The project includes benchmark scenarios to compare:
-- CPU vs GPU runtime
-- scalability with number of paths
-- scalability with number of assets
-- numerical consistency across backends
+Run the benchmark suite:
 
-## Experiments
+```bash
+python scripts/benchmark_monte_carlo.py
+```
 
-The `notebooks/` directory contains research and validation work, including:
-- volatility sensitivity
-- correlation studies
-- CPU/GPU comparisons
-- reproducibility checks
+| Scenario | Assets | Simulations | CPU | GPU | Speedup |
+|----------|--------|-------------|-----|-----|---------|
+| Small    | 2      | 10K         | ~ms | ~ms | ~1x     |
+| Medium   | 10     | 100K        | ~s  | ~ms | ~10-20x |
+| Large    | 50     | 1M          | ~min | ~s | ~50x+  |
+
+Interactive demo with visualizations:
+
+```bash
+jupyter notebook notebooks/v1-demo.ipynb
+```
+
+The notebook includes loss distribution histograms, VaR/ES curves, strategy comparison, and stress testing.
+
+## Compute Backends
+
+| Backend | Library | Data Transfer | Best For |
+|---------|---------|---------------|----------|
+| `CpuMonteCarloEngine` | NumPy | — | Development, small-scale |
+| `GpuMonteCarloEngine` | CuPy | GPU→CPU tuples | Medium scale |
+| `GpuAcceleratedPipeline` | CuPy | 6 scalars only | Production, >100K paths |
+
+Switching backend is a single line:
+
+```python
+engine = CpuMonteCarloEngine(seed=42)      # NumPy
+engine = GpuMonteCarloEngine(seed=42)      # CuPy — identical interface
+```
 
 ## Testing
 
-Run the unit test suite:
 ```bash
-pytest
+pytest tests/                    # unit tests (default)
+pytest -m integration            # integration tests (requires network)
+pytest -m gpu                    # GPU tests (requires CUDA)
+pytest --cov=src --cov-report=term-missing  # with coverage
 ```
 
-With coverage:
+## Development
+
 ```bash
-pytest --cov=src --cov-report=term-missing
+ruff check .       # lint
+ruff format .      # format
+mypy src/          # type check
+pre-commit run --all-files  # all checks
 ```
 
-Run integration tests (requires network):
-```bash
-pytest -m integration
-```
-## CI/CD
+See [CLAUDE.md](CLAUDE.md) for branch model, commit conventions, and architecture details.
 
-The CI/CD pipeline covers:
-- linting
-- formatting
-- type checking
-- tests
-- coverage
-- package build
-- documentation and release workflows
+## Documentation
+
+```bash
+mkdocs serve       # local dev server at http://127.0.0.1:8000
+mkdocs build       # build static site
+```
 
 ## Roadmap
 
-- [x] Domain model (Asset, Portfolio, HistoricalPrices)
+- [x] Domain model (Asset, Portfolio, HistoricalPrices, MarketParameters)
 - [x] Market data provider (Yahoo Finance)
-- [ ] Baseline GBM simulation
-- [ ] GPU acceleration
-- [ ] Multi-asset correlation support
-- [ ] VaR and ES analytics
-- [ ] Benchmark suite
-- [ ] Advanced stochastic models
+- [x] Monte Carlo simulation (CPU + GPU)
+- [x] Risk metrics (VaR, ES)
+- [x] Interactive CLI
+- [x] Benchmark suite
+- [ ] Advanced stochastic models (Heston, jump-diffusion)
+- [ ] Multi-currency support
+- [ ] Real-time streaming data
 
 ## License
 

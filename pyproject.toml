@@ -100,5 +100,22 @@ addopts = "-m 'not integration and not gpu'"
 [tool.ruff]
 extend-exclude = ["notebooks"]
 
+[tool.coverage.run]
+source = ["portfolio_risk_engine"]
+omit = [
+    "*/infrastructure/simulation/gpu_monte_carlo_engine.py",
+    "*/infrastructure/simulation/gpu_accelerated_pipeline.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.",
+    "if _CUPY_AVAILABLE",
+    "if _GPU_AVAILABLE",
+    "except ImportError",
+]
+fail_under = 90
+
 [tool.mypy]
 ignore_missing_imports = true
