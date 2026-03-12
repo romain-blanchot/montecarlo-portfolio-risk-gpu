@@ -12,31 +12,31 @@
         <meta name="author" content="Romain Blanchot">
       
       
-        <link rel="canonical" href="https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/architecture/">
+        <link rel="canonical" href="https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/user-guide/cli/">
       
       
-        <link rel="prev" href="../user-guide/gpu/">
+        <link rel="prev" href="../pipeline/">
       
       
-        <link rel="next" href="../glossary/">
+        <link rel="next" href="../gpu/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
     
     
       
-        <title>Architecture - Portfolio Risk Engine</title>
+        <title>CLI Reference - Portfolio Risk Engine</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +55,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#architecture" class="md-skip">
+        <a href="#cli-reference" class="md-skip">
           Skip to content
         </a>
       
@@ -100,7 +100,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Portfolio Risk Engine" class="md-header__button md-logo" aria-label="Portfolio Risk Engine" data-md-component="logo">
+    <a href="../.." title="Portfolio Risk Engine" class="md-header__button md-logo" aria-label="Portfolio Risk Engine" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architecture
+              CLI Reference
             
           </span>
         </div>
@@ -231,7 +231,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -252,31 +252,11 @@
     
     
       <li class="md-tabs__item">
-        <a href="../getting-started/" class="md-tabs__link">
+        <a href="../../getting-started/" class="md-tabs__link">
           
   
   
   Getting Started
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../user-guide/pipeline/" class="md-tabs__link">
-          
-  
-  
-  User Guide
 
         </a>
       </li>
@@ -294,7 +274,27 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../pipeline/" class="md-tabs__link">
+          
+  
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
           
   
   
@@ -312,7 +312,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../benchmarks/" class="md-tabs__link">
+      <a href="../../benchmarks/" class="md-tabs__link">
         
   
   
@@ -331,7 +331,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../development/" class="md-tabs__link">
+      <a href="../../development/" class="md-tabs__link">
         
   
   
@@ -350,7 +350,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../api/" class="md-tabs__link">
+      <a href="../../api/" class="md-tabs__link">
         
   
   
@@ -385,7 +385,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Portfolio Risk Engine" class="md-nav__button md-logo" aria-label="Portfolio Risk Engine" data-md-component="logo">
+    <a href="../.." title="Portfolio Risk Engine" class="md-nav__button md-logo" aria-label="Portfolio Risk Engine" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -415,7 +415,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -494,7 +494,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting-started/" class="md-nav__link">
+      <a href="../../getting-started/" class="md-nav__link">
         
   
   
@@ -502,149 +502,6 @@
     
   
     Installation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    User Guide
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    User Guide
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../user-guide/pipeline/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Simulation Pipeline
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../user-guide/cli/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CLI Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../user-guide/gpu/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    GPU Acceleration
   
 
     
@@ -690,17 +547,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Concepts
+    User Guide
   
 
     
@@ -711,16 +568,44 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Concepts
+    User Guide
   
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simulation Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -745,7 +630,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
+    CLI Reference
   
 
     
@@ -763,7 +648,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
+    CLI Reference
   
 
     
@@ -789,10 +674,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#layer-overview" class="md-nav__link">
+  <a href="#launch" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Layer Overview
+        Launch
       
     </span>
   </a>
@@ -800,10 +685,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dependency-rule" class="md-nav__link">
+  <a href="#menu" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dependency Rule
+        Menu
       
     </span>
   </a>
@@ -811,22 +696,88 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#data-pipeline" class="md-nav__link">
+  <a href="#workflow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Data Pipeline
+        Workflow
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Data Pipeline">
+    <nav class="md-nav" aria-label="Workflow">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#step-details" class="md-nav__link">
+  <a href="#option-1-define-portfolio" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step Details
+        Option 1: Define Portfolio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-fetch-market-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 2: Fetch Market Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-estimate-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 3: Estimate Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-4-run-monte-carlo-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 4: Run Monte Carlo Simulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-5-compute-risk-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 5: Compute Risk Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-6-full-pipeline-cpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 6: Full Pipeline (CPU)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-7-full-pipeline-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 7: Full Pipeline (GPU)
       
     </span>
   </a>
@@ -835,39 +786,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#domain-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Domain Model
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#compute-backends" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Compute Backends
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#project-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Project Structure
-      
-    </span>
-  </a>
   
 </li>
       
@@ -887,7 +805,122 @@
   
   
     <li class="md-nav__item">
-      <a href="../glossary/" class="md-nav__link">
+      <a href="../gpu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GPU Acceleration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
         
   
   
@@ -922,7 +955,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../benchmarks/" class="md-nav__link">
+      <a href="../../benchmarks/" class="md-nav__link">
         
   
   
@@ -949,7 +982,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/" class="md-nav__link">
+      <a href="../../development/" class="md-nav__link">
         
   
   
@@ -976,7 +1009,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/" class="md-nav__link">
+      <a href="../../api/" class="md-nav__link">
         
   
   
@@ -1023,10 +1056,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#layer-overview" class="md-nav__link">
+  <a href="#launch" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Layer Overview
+        Launch
       
     </span>
   </a>
@@ -1034,10 +1067,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dependency-rule" class="md-nav__link">
+  <a href="#menu" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dependency Rule
+        Menu
       
     </span>
   </a>
@@ -1045,22 +1078,88 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#data-pipeline" class="md-nav__link">
+  <a href="#workflow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Data Pipeline
+        Workflow
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Data Pipeline">
+    <nav class="md-nav" aria-label="Workflow">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#step-details" class="md-nav__link">
+  <a href="#option-1-define-portfolio" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step Details
+        Option 1: Define Portfolio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-fetch-market-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 2: Fetch Market Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-estimate-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 3: Estimate Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-4-run-monte-carlo-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 4: Run Monte Carlo Simulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-5-compute-risk-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 5: Compute Risk Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-6-full-pipeline-cpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 6: Full Pipeline (CPU)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-7-full-pipeline-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 7: Full Pipeline (GPU)
       
     </span>
   </a>
@@ -1069,39 +1168,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#domain-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Domain Model
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#compute-backends" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Compute Backends
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#project-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Project Structure
-      
-    </span>
-  </a>
   
 </li>
       
@@ -1125,317 +1191,69 @@
   
 
 
-<h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
-<p>The Portfolio Risk Engine follows a <strong>hexagonal (ports &amp; adapters) architecture</strong> with three layers. Domain logic is fully isolated from infrastructure concerns.</p>
-<h2 id="layer-overview">Layer Overview<a class="headerlink" href="#layer-overview" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TB
-    subgraph CLI["CLI Layer"]
-        cli[portfolio-sim&lt;br/&gt;Interactive menu]
-    end
-
-    subgraph APP["Application Layer"]
-        direction LR
-        uc1[FetchMarketData]
-        uc2[ComputeLogReturns]
-        uc3[EstimateMarketParameters]
-        uc4[RunMonteCarlo]
-        uc5[ComputePortfolioRisk]
-    end
-
-    subgraph DOMAIN["Domain Layer"]
-        direction TB
-        subgraph VO["Value Objects"]
-            ticker[Ticker]
-            currency[Currency]
-            weight[Weight]
-            daterange[DateRange]
-        end
-        subgraph MODELS["Models"]
-            asset[Asset]
-            position[Position]
-            portfolio[Portfolio]
-            hp[HistoricalPrices]
-            hr[HistoricalReturns]
-            mp[MarketParameters]
-            gbm[MultivariateGBM]
-            sr[SimulationResult]
-            rm[RiskMetrics]
-        end
-        subgraph PORTS["Ports"]
-            mdp[MarketDataProvider&lt;br/&gt;Protocol]
-            mce[MonteCarloEngine&lt;br/&gt;Protocol]
-        end
-        subgraph SERVICES["Services"]
-            chol[cholesky]
-        end
-    end
-
-    subgraph INFRA["Infrastructure Layer"]
-        yahoo[YahooFinance&lt;br/&gt;MarketDataProvider]
-        cpu[CpuMonteCarlo&lt;br/&gt;Engine]
-        gpu[GpuMonteCarlo&lt;br/&gt;Engine]
-        gpuaccel[GpuAccelerated&lt;br/&gt;Pipeline]
-    end
-
-    cli --&gt; APP
-    APP --&gt; DOMAIN
-    yahoo -.-&gt;|implements| mdp
-    cpu -.-&gt;|implements| mce
-    gpu -.-&gt;|implements| mce
-
-    style DOMAIN fill:#e8eaf6,stroke:#3f51b5
-    style APP fill:#e3f2fd,stroke:#2196f3
-    style INFRA fill:#fce4ec,stroke:#e91e63
-    style CLI fill:#e8f5e9,stroke:#4caf50</code></pre>
-<h2 id="dependency-rule">Dependency Rule<a class="headerlink" href="#dependency-rule" title="Permanent link">&para;</a></h2>
-<p>Dependencies point <strong>inward</strong> — infrastructure and application depend on domain, never the reverse.</p>
-<pre class="mermaid"><code>graph LR
-    INFRA[Infrastructure] --&gt;|depends on| DOMAIN[Domain]
-    APP[Application] --&gt;|depends on| DOMAIN
-    CLI --&gt;|depends on| APP
-    CLI --&gt;|depends on| INFRA
-
-    DOMAIN -.-x|never depends on| INFRA
-    DOMAIN -.-x|never depends on| APP
-
-    style DOMAIN fill:#e8eaf6,stroke:#3f51b5,stroke-width:3px</code></pre>
-<ul>
-<li><strong>Domain</strong> defines <code>Protocol</code> interfaces (ports) with zero external dependencies</li>
-<li><strong>Infrastructure</strong> provides concrete implementations (adapters)</li>
-<li><strong>Application</strong> orchestrates domain operations via use cases</li>
-</ul>
-<h2 id="data-pipeline">Data Pipeline<a class="headerlink" href="#data-pipeline" title="Permanent link">&para;</a></h2>
-<p>The simulation flow chains five use cases in sequence. Each use case transforms one domain model into the next:</p>
-<pre class="mermaid"><code>flowchart LR
-    A["📊 FetchMarketData"] --&gt; B["📈 ComputeLogReturns"]
-    B --&gt; C["📐 EstimateMarket&lt;br/&gt;Parameters"]
-    C --&gt; D["🎲 RunMonteCarlo"]
-    D --&gt; E["⚠️ ComputePortfolio&lt;br/&gt;Risk"]
-
-    A1[/"HistoricalPrices"/] --&gt; B
-    B1[/"HistoricalReturns"/] --&gt; C
-    C1[/"MarketParameters"/] --&gt; D
-    D1[/"SimulationResult"/] --&gt; E
-    E1[/"PortfolioRiskMetrics"/]
-
-    A --&gt; A1
-    B --&gt; B1
-    C --&gt; C1
-    D --&gt; D1
-    E --&gt; E1
-
-    style A fill:#bbdefb
-    style B fill:#bbdefb
-    style C fill:#bbdefb
-    style D fill:#bbdefb
-    style E fill:#bbdefb
-    style A1 fill:#fff9c4
-    style B1 fill:#fff9c4
-    style C1 fill:#fff9c4
-    style D1 fill:#fff9c4
-    style E1 fill:#c8e6c9</code></pre>
-<h3 id="step-details">Step Details<a class="headerlink" href="#step-details" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Step</th>
-<th>Use Case</th>
-<th>Input</th>
-<th>Output</th>
-<th>Key Operation</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td><code>FetchMarketData</code></td>
-<td>Tickers + DateRange</td>
-<td><code>HistoricalPrices</code></td>
-<td>Yahoo Finance API call</td>
-</tr>
-<tr>
-<td>2</td>
-<td><code>ComputeLogReturns</code></td>
-<td><code>HistoricalPrices</code></td>
-<td><code>HistoricalReturns</code></td>
-<td><span class="arithmatex">\(r_t = \ln(S_t / S_{t-1})\)</span></td>
-</tr>
-<tr>
-<td>3</td>
-<td><code>EstimateMarketParameters</code></td>
-<td><code>HistoricalReturns</code></td>
-<td><code>MarketParameters</code></td>
-<td>Annualized drift + covariance</td>
-</tr>
-<tr>
-<td>4</td>
-<td><code>RunMonteCarlo</code></td>
-<td><code>MarketParameters</code></td>
-<td><code>MonteCarloSimulationResult</code></td>
-<td>Cholesky → GBM → terminal prices</td>
-</tr>
-<tr>
-<td>5</td>
-<td><code>ComputePortfolioRisk</code></td>
-<td>Simulation + Portfolio</td>
-<td><code>PortfolioRiskMetrics</code></td>
-<td>Weighted returns → VaR/ES</td>
-</tr>
-</tbody>
-</table>
-<h2 id="domain-model">Domain Model<a class="headerlink" href="#domain-model" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>classDiagram
-    class Ticker {
-        +str value
-        __post_init__() validates
-    }
-    class Currency {
-        +str code
-    }
-    class Weight {
-        +float value
-        0.0 ≤ value ≤ 1.0
-    }
-    class DateRange {
-        +date start
-        +date end
-        start &lt; end
-    }
-
-    class Asset {
-        +Ticker ticker
-        +Currency currency
-        +str? name
-    }
-    class Position {
-        +Asset asset
-        +Weight weight
-    }
-    class Portfolio {
-        +tuple~Position~ positions
-        +tickers() list~Ticker~
-        +weights() list~float~
-        Σ weights = 1.0
-    }
-
-    class HistoricalPrices {
-        +tuple~Ticker~ tickers
-        +tuple~date~ dates
-        +dict prices_by_ticker
-    }
-    class HistoricalReturns {
-        +tuple~Ticker~ tickers
-        +tuple~date~ dates
-        +dict returns_by_ticker
-    }
-
-    class MarketParameters {
-        +tuple~Ticker~ tickers
-        +tuple~float~ drift_vector
-        +tuple~tuple~float~~ covariance_matrix
-        +int annualization_factor
-    }
-    class MultivariateGBM {
-        +MarketParameters market_parameters
-        +tuple~tuple~float~~ cholesky_factor
-    }
-
-    class MonteCarloSimulationResult {
-        +tuple~Ticker~ tickers
-        +tuple~float~ initial_prices
-        +dict terminal_prices
-        +int num_simulations
-        +int time_horizon_days
-    }
-    class PortfolioRiskMetrics {
-        +float mean_return
-        +float volatility
-        +float var_95
-        +float var_99
-        +float es_95
-        +float es_99
-    }
-
-    Asset --&gt; Ticker
-    Asset --&gt; Currency
-    Position --&gt; Asset
-    Position --&gt; Weight
-    Portfolio --&gt; Position
-
-    HistoricalPrices --&gt; Ticker
-    HistoricalReturns --&gt; Ticker
-    MarketParameters --&gt; Ticker
-    MultivariateGBM --&gt; MarketParameters
-    MonteCarloSimulationResult --&gt; Ticker</code></pre>
-<h2 id="compute-backends">Compute Backends<a class="headerlink" href="#compute-backends" title="Permanent link">&para;</a></h2>
-<p>The engine supports two execution backends through the <code>MonteCarloEngine</code> protocol:</p>
-<pre class="mermaid"><code>graph TB
-    subgraph PROTOCOL["Port (Protocol)"]
-        MCE[MonteCarloEngine&lt;br/&gt;simulate]
-    end
-
-    subgraph CPU["CPU Backend"]
-        CPUE[CpuMonteCarloEngine&lt;br/&gt;NumPy + np.random]
-    end
-
-    subgraph GPU["GPU Backends"]
-        GPUE[GpuMonteCarloEngine&lt;br/&gt;CuPy arrays]
-        GPUA[GpuAcceleratedPipeline&lt;br/&gt;Fused simulate + risk]
-    end
-
-    CPUE -.-&gt;|implements| MCE
-    GPUE -.-&gt;|implements| MCE
-    GPUA -.-&gt;|bypasses port| MCE
-
-    style PROTOCOL fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px
-    style CPU fill:#e8f5e9,stroke:#4caf50
-    style GPU fill:#fff3e0,stroke:#ff9800</code></pre>
-<table>
-<thead>
-<tr>
-<th>Backend</th>
-<th>Library</th>
-<th>Data Path</th>
-<th>Best For</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>CpuMonteCarloEngine</code></td>
-<td>NumPy</td>
-<td>CPU → tuples → CPU</td>
-<td>Development, small-scale</td>
-</tr>
-<tr>
-<td><code>GpuMonteCarloEngine</code></td>
-<td>CuPy</td>
-<td>GPU → tuples → CPU</td>
-<td>Medium scale, compatible with domain pipeline</td>
-</tr>
-<tr>
-<td><code>GpuAcceleratedPipeline</code></td>
-<td>CuPy</td>
-<td>GPU → GPU → 6 scalars</td>
-<td>Production, large-scale (zero tuple allocation)</td>
-</tr>
-</tbody>
-</table>
-<p>The <code>GpuAcceleratedPipeline</code> fuses simulation and risk computation into a single GPU pass — only 6 scalar floats (the risk metrics) are transferred back to CPU. This avoids the overhead of materializing millions of terminal prices as Python tuples.</p>
-<h2 id="project-structure">Project Structure<a class="headerlink" href="#project-structure" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>src/portfolio_risk_engine/
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── domain/
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   ├── value_objects/          # Ticker, Currency, Weight, DateRange
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   ├── models/                 # Asset, Position, Portfolio, ...
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   ├── ports/                  # MarketDataProvider, MonteCarloEngine (Protocol)
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   └── services/               # cholesky()
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>├── application/
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   └── use_cases/              # FetchMarketData, ComputeLogReturns, ...
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>├── infrastructure/
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│   ├── market_data/            # YahooFinanceMarketDataProvider
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│   └── simulation/             # CpuMonteCarloEngine, Gpu*
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>├── cli.py                      # Interactive CLI (PortfolioSimulatorCLI)
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>└── __main__.py                 # python -m portfolio_risk_engine
+<h1 id="cli-reference">CLI Reference<a class="headerlink" href="#cli-reference" title="Permanent link">&para;</a></h1>
+<p>The engine provides an interactive menu-driven CLI.</p>
+<h2 id="launch">Launch<a class="headerlink" href="#launch" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Via entry point</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>portfolio-sim
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Via module</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>python<span class="w"> </span>-m<span class="w"> </span>portfolio_risk_engine
 </code></pre></div>
+<h2 id="menu">Menu<a class="headerlink" href="#menu" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>============================================
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  Portfolio Monte Carlo Risk Simulator
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>============================================
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  1. Define portfolio
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  2. Fetch market data
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  3. Estimate parameters
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  4. Run Monte Carlo simulation
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>  5. Compute risk metrics
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>  6. Full pipeline (CPU)
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  7. Full pipeline (GPU accelerated)    # only if CuPy + CUDA available
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>  0. Exit
+</code></pre></div>
+<h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h2>
+<p>The CLI is <strong>stateful</strong> — each step builds on the previous one. The state bar shows current progress:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>State: Portfolio: [AAPL, MSFT] | Prices: 251 obs | Params: ready | Simulation: 50000 paths | Risk: computed
+</code></pre></div>
+<h3 id="option-1-define-portfolio">Option 1: Define Portfolio<a class="headerlink" href="#option-1-define-portfolio" title="Permanent link">&para;</a></h3>
+<p>Prompts for ticker symbols and allocation weights.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Tickers (comma-separated, e.g. AAPL,MSFT,GOOGL): AAPL,MSFT,GOOGL
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Weights for [&#39;AAPL&#39;, &#39;MSFT&#39;, &#39;GOOGL&#39;] (comma-separated, must sum to 1): 0.5,0.3,0.2
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All assets are assigned USD currency. Weights must sum to exactly 1.0.</p>
+</div>
+<h3 id="option-2-fetch-market-data">Option 2: Fetch Market Data<a class="headerlink" href="#option-2-fetch-market-data" title="Permanent link">&para;</a></h3>
+<p>Prompts for a date range and fetches adjusted close prices from Yahoo Finance.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Start date (YYYY-MM-DD): 2023-01-01
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>End date (YYYY-MM-DD): 2024-01-01
+</code></pre></div>
+<p>Requires an active network connection.</p>
+<h3 id="option-3-estimate-parameters">Option 3: Estimate Parameters<a class="headerlink" href="#option-3-estimate-parameters" title="Permanent link">&para;</a></h3>
+<p>Computes annualized drift vector and covariance matrix from the fetched price history. Displays the annualization factor, per-asset drift, and full covariance matrix.</p>
+<h3 id="option-4-run-monte-carlo-simulation">Option 4: Run Monte Carlo Simulation<a class="headerlink" href="#option-4-run-monte-carlo-simulation" title="Permanent link">&para;</a></h3>
+<p>Prompts for simulation parameters:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Number of simulations [10000]: 50000
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>Time horizon in trading days [21]: 21
+</code></pre></div>
+<p>Uses the CPU engine (<code>CpuMonteCarloEngine</code>).</p>
+<h3 id="option-5-compute-risk-metrics">Option 5: Compute Risk Metrics<a class="headerlink" href="#option-5-compute-risk-metrics" title="Permanent link">&para;</a></h3>
+<p>Computes and displays portfolio-level risk:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Mean return:            +0.0083%
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Volatility:             0.0512%
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>VaR 95%:                0.0721%
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>VaR 99%:                0.1068%
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>Expected Shortfall 95%: 0.0893%
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>Expected Shortfall 99%: 0.1198%
+</code></pre></div>
+<h3 id="option-6-full-pipeline-cpu">Option 6: Full Pipeline (CPU)<a class="headerlink" href="#option-6-full-pipeline-cpu" title="Permanent link">&para;</a></h3>
+<p>Runs steps 1–5 sequentially, prompting for inputs as needed.</p>
+<h3 id="option-7-full-pipeline-gpu">Option 7: Full Pipeline (GPU)<a class="headerlink" href="#option-7-full-pipeline-gpu" title="Permanent link">&para;</a></h3>
+<p>Available only when CuPy and a CUDA GPU are detected. Uses <code>GpuAcceleratedPipeline</code> — the entire simulation and risk computation stays on GPU. Only 6 scalar metrics are transferred back to CPU.</p>
 
 
 
@@ -1491,10 +1309,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tabs", "navigation.top", "navigation.sections", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.top", "navigation.sections", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       

@@ -12,13 +12,13 @@
         <meta name="author" content="Romain Blanchot">
       
       
-        <link rel="canonical" href="https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/architecture/">
+        <link rel="canonical" href="https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/glossary/">
       
       
-        <link rel="prev" href="../user-guide/gpu/">
+        <link rel="prev" href="../architecture/">
       
       
-        <link rel="next" href="../glossary/">
+        <link rel="next" href="../benchmarks/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Architecture - Portfolio Risk Engine</title>
+        <title>Glossary - Portfolio Risk Engine</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#architecture" class="md-skip">
+        <a href="#glossary" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architecture
+              Glossary
             
           </span>
         </div>
@@ -294,7 +294,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../architecture/" class="md-tabs__link">
           
   
   
@@ -726,6 +726,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -745,7 +773,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
+    Glossary
   
 
     
@@ -763,7 +791,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
+    Glossary
   
 
     
@@ -789,44 +817,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#layer-overview" class="md-nav__link">
+  <a href="#risk-metrics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Layer Overview
+        Risk Metrics
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dependency-rule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dependency Rule
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-pipeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Data Pipeline
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Data Pipeline">
+    <nav class="md-nav" aria-label="Risk Metrics">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#step-details" class="md-nav__link">
+  <a href="#value-at-risk-var" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step Details
+        Value at Risk (VaR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expected-shortfall-es" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expected Shortfall (ES)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loss-positive-convention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loss-Positive Convention
       
     </span>
   </a>
@@ -839,35 +867,207 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#domain-model" class="md-nav__link">
+  <a href="#stochastic-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Domain Model
+        Stochastic Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stochastic Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#geometric-brownian-motion-gbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geometric Brownian Motion (GBM)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#compute-backends" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#multivariate-gbm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Compute Backends
+        Multivariate GBM
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#project-structure" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#drift-vector" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Project Structure
+        Drift Vector
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#covariance-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Covariance Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cholesky-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cholesky Decomposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simulation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Simulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#monte-carlo-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monte Carlo Simulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminal-price" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal Price
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#time-horizon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Time Horizon
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#annualization-factor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Annualization Factor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#portfolio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Portfolio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Portfolio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#portfolio_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Portfolio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#position" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Position
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Weight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ticker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ticker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log Returns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -875,34 +1075,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../glossary/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Glossary
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1023,44 +1195,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#layer-overview" class="md-nav__link">
+  <a href="#risk-metrics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Layer Overview
+        Risk Metrics
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dependency-rule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dependency Rule
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-pipeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Data Pipeline
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Data Pipeline">
+    <nav class="md-nav" aria-label="Risk Metrics">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#step-details" class="md-nav__link">
+  <a href="#value-at-risk-var" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step Details
+        Value at Risk (VaR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expected-shortfall-es" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expected Shortfall (ES)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loss-positive-convention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loss-Positive Convention
       
     </span>
   </a>
@@ -1073,35 +1245,207 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#domain-model" class="md-nav__link">
+  <a href="#stochastic-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Domain Model
+        Stochastic Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stochastic Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#geometric-brownian-motion-gbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geometric Brownian Motion (GBM)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#compute-backends" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#multivariate-gbm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Compute Backends
+        Multivariate GBM
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#project-structure" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#drift-vector" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Project Structure
+        Drift Vector
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#covariance-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Covariance Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cholesky-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cholesky Decomposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simulation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Simulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#monte-carlo-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monte Carlo Simulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminal-price" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal Price
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#time-horizon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Time Horizon
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#annualization-factor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Annualization Factor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#portfolio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Portfolio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Portfolio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#portfolio_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Portfolio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#position" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Position
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Weight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ticker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ticker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log Returns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1125,317 +1469,118 @@
   
 
 
-<h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
-<p>The Portfolio Risk Engine follows a <strong>hexagonal (ports &amp; adapters) architecture</strong> with three layers. Domain logic is fully isolated from infrastructure concerns.</p>
-<h2 id="layer-overview">Layer Overview<a class="headerlink" href="#layer-overview" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TB
-    subgraph CLI["CLI Layer"]
-        cli[portfolio-sim&lt;br/&gt;Interactive menu]
-    end
-
-    subgraph APP["Application Layer"]
-        direction LR
-        uc1[FetchMarketData]
-        uc2[ComputeLogReturns]
-        uc3[EstimateMarketParameters]
-        uc4[RunMonteCarlo]
-        uc5[ComputePortfolioRisk]
-    end
-
-    subgraph DOMAIN["Domain Layer"]
-        direction TB
-        subgraph VO["Value Objects"]
-            ticker[Ticker]
-            currency[Currency]
-            weight[Weight]
-            daterange[DateRange]
-        end
-        subgraph MODELS["Models"]
-            asset[Asset]
-            position[Position]
-            portfolio[Portfolio]
-            hp[HistoricalPrices]
-            hr[HistoricalReturns]
-            mp[MarketParameters]
-            gbm[MultivariateGBM]
-            sr[SimulationResult]
-            rm[RiskMetrics]
-        end
-        subgraph PORTS["Ports"]
-            mdp[MarketDataProvider&lt;br/&gt;Protocol]
-            mce[MonteCarloEngine&lt;br/&gt;Protocol]
-        end
-        subgraph SERVICES["Services"]
-            chol[cholesky]
-        end
-    end
-
-    subgraph INFRA["Infrastructure Layer"]
-        yahoo[YahooFinance&lt;br/&gt;MarketDataProvider]
-        cpu[CpuMonteCarlo&lt;br/&gt;Engine]
-        gpu[GpuMonteCarlo&lt;br/&gt;Engine]
-        gpuaccel[GpuAccelerated&lt;br/&gt;Pipeline]
-    end
-
-    cli --&gt; APP
-    APP --&gt; DOMAIN
-    yahoo -.-&gt;|implements| mdp
-    cpu -.-&gt;|implements| mce
-    gpu -.-&gt;|implements| mce
-
-    style DOMAIN fill:#e8eaf6,stroke:#3f51b5
-    style APP fill:#e3f2fd,stroke:#2196f3
-    style INFRA fill:#fce4ec,stroke:#e91e63
-    style CLI fill:#e8f5e9,stroke:#4caf50</code></pre>
-<h2 id="dependency-rule">Dependency Rule<a class="headerlink" href="#dependency-rule" title="Permanent link">&para;</a></h2>
-<p>Dependencies point <strong>inward</strong> — infrastructure and application depend on domain, never the reverse.</p>
-<pre class="mermaid"><code>graph LR
-    INFRA[Infrastructure] --&gt;|depends on| DOMAIN[Domain]
-    APP[Application] --&gt;|depends on| DOMAIN
-    CLI --&gt;|depends on| APP
-    CLI --&gt;|depends on| INFRA
-
-    DOMAIN -.-x|never depends on| INFRA
-    DOMAIN -.-x|never depends on| APP
-
-    style DOMAIN fill:#e8eaf6,stroke:#3f51b5,stroke-width:3px</code></pre>
+<h1 id="glossary">Glossary<a class="headerlink" href="#glossary" title="Permanent link">&para;</a></h1>
+<p>Financial and technical terms used throughout this project.</p>
+<hr />
+<h2 id="risk-metrics">Risk Metrics<a class="headerlink" href="#risk-metrics" title="Permanent link">&para;</a></h2>
+<h3 id="value-at-risk-var">Value at Risk (VaR)<a class="headerlink" href="#value-at-risk-var" title="Permanent link">&para;</a></h3>
+<p>The <strong>α-quantile</strong> of the loss distribution. VaR at confidence level α (e.g. 95%) answers:</p>
+<blockquote>
+<p>"With probability α, we will not lose more than VaR over the given time horizon."</p>
+</blockquote>
+<div class="arithmatex">\[\text{VaR}_\alpha = \inf\{l : P(\text{Loss} &gt; l) \leq 1 - \alpha\}\]</div>
+<p>This engine computes VaR as <code>np.percentile(losses, α × 100)</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Convention</p>
+<p>This engine uses the <strong>loss-positive convention</strong>: a positive VaR means the portfolio lost money. A negative VaR means the portfolio gained money even in the worst (1−α) fraction of scenarios.</p>
+</div>
+<h3 id="expected-shortfall-es">Expected Shortfall (ES)<a class="headerlink" href="#expected-shortfall-es" title="Permanent link">&para;</a></h3>
+<p>Also called <strong>Conditional VaR (CVaR)</strong> or <strong>Tail Loss</strong>. The average loss in the worst (1−α) fraction of outcomes:</p>
+<div class="arithmatex">\[\text{ES}_\alpha = \mathbb{E}[\text{Loss} \mid \text{Loss} \geq \text{VaR}_\alpha]\]</div>
+<p>ES is always ≥ VaR. It is considered a more robust risk measure because it captures the <strong>severity</strong> of tail losses, not just where the tail begins. ES is a <strong>coherent risk measure</strong> (subadditive), unlike VaR.</p>
+<h3 id="loss-positive-convention">Loss-Positive Convention<a class="headerlink" href="#loss-positive-convention" title="Permanent link">&para;</a></h3>
+<p>In this engine, <strong>loss = −return</strong>. A positive value means the portfolio declined; a negative value means it gained. All VaR and ES values follow this convention.</p>
+<hr />
+<h2 id="stochastic-model">Stochastic Model<a class="headerlink" href="#stochastic-model" title="Permanent link">&para;</a></h2>
+<h3 id="geometric-brownian-motion-gbm">Geometric Brownian Motion (GBM)<a class="headerlink" href="#geometric-brownian-motion-gbm" title="Permanent link">&para;</a></h3>
+<p>The baseline price dynamics model. Each asset price <span class="arithmatex">\(S_t\)</span> follows:</p>
+<div class="arithmatex">\[dS_t = \mu S_t \, dt + \sigma S_t \, dW_t\]</div>
+<p>where:</p>
 <ul>
-<li><strong>Domain</strong> defines <code>Protocol</code> interfaces (ports) with zero external dependencies</li>
-<li><strong>Infrastructure</strong> provides concrete implementations (adapters)</li>
-<li><strong>Application</strong> orchestrates domain operations via use cases</li>
+<li><span class="arithmatex">\(\mu\)</span> — annualized drift (expected return)</li>
+<li><span class="arithmatex">\(\sigma\)</span> — annualized volatility</li>
+<li><span class="arithmatex">\(W_t\)</span> — Wiener process (Brownian motion)</li>
 </ul>
-<h2 id="data-pipeline">Data Pipeline<a class="headerlink" href="#data-pipeline" title="Permanent link">&para;</a></h2>
-<p>The simulation flow chains five use cases in sequence. Each use case transforms one domain model into the next:</p>
-<pre class="mermaid"><code>flowchart LR
-    A["📊 FetchMarketData"] --&gt; B["📈 ComputeLogReturns"]
-    B --&gt; C["📐 EstimateMarket&lt;br/&gt;Parameters"]
-    C --&gt; D["🎲 RunMonteCarlo"]
-    D --&gt; E["⚠️ ComputePortfolio&lt;br/&gt;Risk"]
-
-    A1[/"HistoricalPrices"/] --&gt; B
-    B1[/"HistoricalReturns"/] --&gt; C
-    C1[/"MarketParameters"/] --&gt; D
-    D1[/"SimulationResult"/] --&gt; E
-    E1[/"PortfolioRiskMetrics"/]
-
-    A --&gt; A1
-    B --&gt; B1
-    C --&gt; C1
-    D --&gt; D1
-    E --&gt; E1
-
-    style A fill:#bbdefb
-    style B fill:#bbdefb
-    style C fill:#bbdefb
-    style D fill:#bbdefb
-    style E fill:#bbdefb
-    style A1 fill:#fff9c4
-    style B1 fill:#fff9c4
-    style C1 fill:#fff9c4
-    style D1 fill:#fff9c4
-    style E1 fill:#c8e6c9</code></pre>
-<h3 id="step-details">Step Details<a class="headerlink" href="#step-details" title="Permanent link">&para;</a></h3>
+<p>The closed-form terminal price over horizon <span class="arithmatex">\(T\)</span> is:</p>
+<div class="arithmatex">\[S_T = S_0 \exp\left[\left(\mu - \tfrac{\sigma^2}{2}\right)T + \sigma\sqrt{T}\,Z\right]\]</div>
+<p>where <span class="arithmatex">\(Z \sim \mathcal{N}(0, 1)\)</span>.</p>
+<h3 id="multivariate-gbm">Multivariate GBM<a class="headerlink" href="#multivariate-gbm" title="Permanent link">&para;</a></h3>
+<p>Extension to multiple correlated assets. Independent standard normals <span class="arithmatex">\(\mathbf{Z} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})\)</span> are correlated via Cholesky decomposition:</p>
+<div class="arithmatex">\[\mathbf{Z}_{\text{corr}} = L \cdot \mathbf{Z}\]</div>
+<p>where <span class="arithmatex">\(L\)</span> is the lower-triangular Cholesky factor of the covariance matrix <span class="arithmatex">\(\Sigma = L L^\top\)</span>.</p>
+<h3 id="drift-vector">Drift Vector<a class="headerlink" href="#drift-vector" title="Permanent link">&para;</a></h3>
+<p>A vector <span class="arithmatex">\(\boldsymbol{\mu} = (\mu_1, \ldots, \mu_n)\)</span> of annualized expected returns, one per asset. Estimated from historical log returns.</p>
+<h3 id="covariance-matrix">Covariance Matrix<a class="headerlink" href="#covariance-matrix" title="Permanent link">&para;</a></h3>
+<p>A symmetric positive-definite matrix <span class="arithmatex">\(\Sigma\)</span> capturing both individual asset volatilities (diagonal) and pairwise co-movements (off-diagonal). Estimated from historical log returns and annualized.</p>
+<h3 id="cholesky-decomposition">Cholesky Decomposition<a class="headerlink" href="#cholesky-decomposition" title="Permanent link">&para;</a></h3>
+<p>Factorization of the covariance matrix <span class="arithmatex">\(\Sigma = L L^\top\)</span> into a lower-triangular matrix <span class="arithmatex">\(L\)</span>. Used to generate correlated random samples from independent ones. The engine provides a pure-Python implementation in the domain layer and a GPU implementation via CuPy.</p>
+<hr />
+<h2 id="simulation">Simulation<a class="headerlink" href="#simulation" title="Permanent link">&para;</a></h2>
+<h3 id="monte-carlo-simulation">Monte Carlo Simulation<a class="headerlink" href="#monte-carlo-simulation" title="Permanent link">&para;</a></h3>
+<p>A numerical method that estimates quantities by random sampling. This engine:</p>
+<ol>
+<li>Generates <span class="arithmatex">\(N\)</span> independent standard normal random vectors</li>
+<li>Correlates them via Cholesky decomposition</li>
+<li>Computes terminal asset prices using the GBM formula</li>
+<li>Derives portfolio-level returns and losses</li>
+<li>Estimates VaR and ES from the empirical loss distribution</li>
+</ol>
+<h3 id="terminal-price">Terminal Price<a class="headerlink" href="#terminal-price" title="Permanent link">&para;</a></h3>
+<p>The simulated asset price <span class="arithmatex">\(S_T\)</span> at the end of the time horizon. Each simulation path produces one terminal price per asset.</p>
+<h3 id="time-horizon">Time Horizon<a class="headerlink" href="#time-horizon" title="Permanent link">&para;</a></h3>
+<p>The forward-looking period over which risk is measured, expressed in <strong>trading days</strong>. Common values: 1 day (regulatory), 10 days (Basel), 21 days (~1 month), 252 days (~1 year).</p>
+<h3 id="annualization-factor">Annualization Factor<a class="headerlink" href="#annualization-factor" title="Permanent link">&para;</a></h3>
+<p>A multiplier to convert per-period statistics to annual values. Automatically estimated from the median gap between historical dates:</p>
 <table>
 <thead>
 <tr>
-<th>Step</th>
-<th>Use Case</th>
-<th>Input</th>
-<th>Output</th>
-<th>Key Operation</th>
+<th>Median gap</th>
+<th>Frequency</th>
+<th>Factor</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td><code>FetchMarketData</code></td>
-<td>Tickers + DateRange</td>
-<td><code>HistoricalPrices</code></td>
-<td>Yahoo Finance API call</td>
+<td>≤ 5 days</td>
+<td>Daily</td>
+<td>252</td>
 </tr>
 <tr>
-<td>2</td>
-<td><code>ComputeLogReturns</code></td>
-<td><code>HistoricalPrices</code></td>
-<td><code>HistoricalReturns</code></td>
-<td><span class="arithmatex">\(r_t = \ln(S_t / S_{t-1})\)</span></td>
+<td>≤ 10 days</td>
+<td>Weekly</td>
+<td>52</td>
 </tr>
 <tr>
-<td>3</td>
-<td><code>EstimateMarketParameters</code></td>
-<td><code>HistoricalReturns</code></td>
-<td><code>MarketParameters</code></td>
-<td>Annualized drift + covariance</td>
+<td>≤ 40 days</td>
+<td>Monthly</td>
+<td>12</td>
 </tr>
 <tr>
+<td>≤ 100 days</td>
+<td>Quarterly</td>
 <td>4</td>
-<td><code>RunMonteCarlo</code></td>
-<td><code>MarketParameters</code></td>
-<td><code>MonteCarloSimulationResult</code></td>
-<td>Cholesky → GBM → terminal prices</td>
 </tr>
 <tr>
-<td>5</td>
-<td><code>ComputePortfolioRisk</code></td>
-<td>Simulation + Portfolio</td>
-<td><code>PortfolioRiskMetrics</code></td>
-<td>Weighted returns → VaR/ES</td>
+<td>&gt; 100 days</td>
+<td>Annual</td>
+<td>1</td>
 </tr>
 </tbody>
 </table>
-<h2 id="domain-model">Domain Model<a class="headerlink" href="#domain-model" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>classDiagram
-    class Ticker {
-        +str value
-        __post_init__() validates
-    }
-    class Currency {
-        +str code
-    }
-    class Weight {
-        +float value
-        0.0 ≤ value ≤ 1.0
-    }
-    class DateRange {
-        +date start
-        +date end
-        start &lt; end
-    }
-
-    class Asset {
-        +Ticker ticker
-        +Currency currency
-        +str? name
-    }
-    class Position {
-        +Asset asset
-        +Weight weight
-    }
-    class Portfolio {
-        +tuple~Position~ positions
-        +tickers() list~Ticker~
-        +weights() list~float~
-        Σ weights = 1.0
-    }
-
-    class HistoricalPrices {
-        +tuple~Ticker~ tickers
-        +tuple~date~ dates
-        +dict prices_by_ticker
-    }
-    class HistoricalReturns {
-        +tuple~Ticker~ tickers
-        +tuple~date~ dates
-        +dict returns_by_ticker
-    }
-
-    class MarketParameters {
-        +tuple~Ticker~ tickers
-        +tuple~float~ drift_vector
-        +tuple~tuple~float~~ covariance_matrix
-        +int annualization_factor
-    }
-    class MultivariateGBM {
-        +MarketParameters market_parameters
-        +tuple~tuple~float~~ cholesky_factor
-    }
-
-    class MonteCarloSimulationResult {
-        +tuple~Ticker~ tickers
-        +tuple~float~ initial_prices
-        +dict terminal_prices
-        +int num_simulations
-        +int time_horizon_days
-    }
-    class PortfolioRiskMetrics {
-        +float mean_return
-        +float volatility
-        +float var_95
-        +float var_99
-        +float es_95
-        +float es_99
-    }
-
-    Asset --&gt; Ticker
-    Asset --&gt; Currency
-    Position --&gt; Asset
-    Position --&gt; Weight
-    Portfolio --&gt; Position
-
-    HistoricalPrices --&gt; Ticker
-    HistoricalReturns --&gt; Ticker
-    MarketParameters --&gt; Ticker
-    MultivariateGBM --&gt; MarketParameters
-    MonteCarloSimulationResult --&gt; Ticker</code></pre>
-<h2 id="compute-backends">Compute Backends<a class="headerlink" href="#compute-backends" title="Permanent link">&para;</a></h2>
-<p>The engine supports two execution backends through the <code>MonteCarloEngine</code> protocol:</p>
-<pre class="mermaid"><code>graph TB
-    subgraph PROTOCOL["Port (Protocol)"]
-        MCE[MonteCarloEngine&lt;br/&gt;simulate]
-    end
-
-    subgraph CPU["CPU Backend"]
-        CPUE[CpuMonteCarloEngine&lt;br/&gt;NumPy + np.random]
-    end
-
-    subgraph GPU["GPU Backends"]
-        GPUE[GpuMonteCarloEngine&lt;br/&gt;CuPy arrays]
-        GPUA[GpuAcceleratedPipeline&lt;br/&gt;Fused simulate + risk]
-    end
-
-    CPUE -.-&gt;|implements| MCE
-    GPUE -.-&gt;|implements| MCE
-    GPUA -.-&gt;|bypasses port| MCE
-
-    style PROTOCOL fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px
-    style CPU fill:#e8f5e9,stroke:#4caf50
-    style GPU fill:#fff3e0,stroke:#ff9800</code></pre>
-<table>
-<thead>
-<tr>
-<th>Backend</th>
-<th>Library</th>
-<th>Data Path</th>
-<th>Best For</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>CpuMonteCarloEngine</code></td>
-<td>NumPy</td>
-<td>CPU → tuples → CPU</td>
-<td>Development, small-scale</td>
-</tr>
-<tr>
-<td><code>GpuMonteCarloEngine</code></td>
-<td>CuPy</td>
-<td>GPU → tuples → CPU</td>
-<td>Medium scale, compatible with domain pipeline</td>
-</tr>
-<tr>
-<td><code>GpuAcceleratedPipeline</code></td>
-<td>CuPy</td>
-<td>GPU → GPU → 6 scalars</td>
-<td>Production, large-scale (zero tuple allocation)</td>
-</tr>
-</tbody>
-</table>
-<p>The <code>GpuAcceleratedPipeline</code> fuses simulation and risk computation into a single GPU pass — only 6 scalar floats (the risk metrics) are transferred back to CPU. This avoids the overhead of materializing millions of terminal prices as Python tuples.</p>
-<h2 id="project-structure">Project Structure<a class="headerlink" href="#project-structure" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>src/portfolio_risk_engine/
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── domain/
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   ├── value_objects/          # Ticker, Currency, Weight, DateRange
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   ├── models/                 # Asset, Position, Portfolio, ...
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   ├── ports/                  # MarketDataProvider, MonteCarloEngine (Protocol)
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   └── services/               # cholesky()
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>├── application/
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   └── use_cases/              # FetchMarketData, ComputeLogReturns, ...
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>├── infrastructure/
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│   ├── market_data/            # YahooFinanceMarketDataProvider
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│   └── simulation/             # CpuMonteCarloEngine, Gpu*
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>├── cli.py                      # Interactive CLI (PortfolioSimulatorCLI)
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>└── __main__.py                 # python -m portfolio_risk_engine
-</code></pre></div>
+<hr />
+<h2 id="portfolio">Portfolio<a class="headerlink" href="#portfolio" title="Permanent link">&para;</a></h2>
+<h3 id="portfolio_1">Portfolio<a class="headerlink" href="#portfolio_1" title="Permanent link">&para;</a></h3>
+<p>A collection of <strong>positions</strong> (asset + weight pairs). Weights must sum to 1.0 (within tolerance 1e-8). No duplicate tickers allowed.</p>
+<h3 id="position">Position<a class="headerlink" href="#position" title="Permanent link">&para;</a></h3>
+<p>A single holding: an <code>Asset</code> paired with a <code>Weight</code> representing its allocation in the portfolio.</p>
+<h3 id="weight">Weight<a class="headerlink" href="#weight" title="Permanent link">&para;</a></h3>
+<p>A portfolio allocation fraction, constrained to <span class="arithmatex">\([0, 1]\)</span>.</p>
+<h3 id="ticker">Ticker<a class="headerlink" href="#ticker" title="Permanent link">&para;</a></h3>
+<p>A stock exchange symbol (e.g. <code>AAPL</code>, <code>MSFT</code>, <code>BRK.B</code>). Normalized to uppercase, validated against the pattern <code>[A-Z0-9.\-]{1,10}</code>.</p>
+<h3 id="log-returns">Log Returns<a class="headerlink" href="#log-returns" title="Permanent link">&para;</a></h3>
+<p>The natural logarithm of price ratios between consecutive observations:</p>
+<div class="arithmatex">\[r_t = \ln\left(\frac{S_t}{S_{t-1}}\right)\]</div>
+<p>Log returns are preferred over simple returns because they are additive over time and approximately normally distributed.</p>
 
 
 

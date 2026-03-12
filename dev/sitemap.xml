@@ -2,14 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/</loc>
-         <lastmod>2026-03-10</lastmod>
+         <lastmod>2026-03-12</lastmod>
     </url>
     <url>
          <loc>https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/api/</loc>
-         <lastmod>2026-03-10</lastmod>
+         <lastmod>2026-03-12</lastmod>
     </url>
     <url>
          <loc>https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/architecture/</loc>
-         <lastmod>2026-03-10</lastmod>
+         <lastmod>2026-03-12</lastmod>
+    </url>
+    <url>
+         <loc>https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/benchmarks/</loc>
+         <lastmod>2026-03-12</lastmod>
+    </url>
+    <url>
+         <loc>https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/development/</loc>
+         <lastmod>2026-03-12</lastmod>
+    </url>
+    <url>
+         <loc>https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/getting-started/</loc>
+         <lastmod>2026-03-12</lastmod>
+    </url>
+    <url>
+         <loc>https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/glossary/</loc>
+         <lastmod>2026-03-12</lastmod>
+    </url>
+    <url>
+         <loc>https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/user-guide/cli/</loc>
+         <lastmod>2026-03-12</lastmod>
+    </url>
+    <url>
+         <loc>https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/user-guide/gpu/</loc>
+         <lastmod>2026-03-12</lastmod>
+    </url>
+    <url>
+         <loc>https://romain-blanchot.github.io/montecarlo-portfolio-risk-gpu/dev/user-guide/pipeline/</loc>
+         <lastmod>2026-03-12</lastmod>
     </url>
 </urlset>
