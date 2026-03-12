@@ -97,5 +97,8 @@ markers = [
 ]
 addopts = "-m 'not integration and not gpu'"
 
+[tool.ruff]
+extend-exclude = ["notebooks"]
+
 [tool.mypy]
 ignore_missing_imports = true
